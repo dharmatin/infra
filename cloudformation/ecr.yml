@@ -1,0 +1,30 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: ECR Stack
+Parameters:
+  RepositoryName:
+    Description: repository name of the ECR
+    Type: String
+  AccountARNs:
+    Description: "Comma-delimited list of AWS Account number that is allowed to access the repository"
+    Type: CommaDelimitedList
+Resources:
+  Repository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Ref 'RepositoryName'
+      RepositoryPolicyText:
+        Version: '2008-10-17'
+        Statement:
+          -
+            Sid: allowCrossAccountPullAndPush
+            Effect: Allow
+            Principal:
+              AWS: !Ref 'AccountARNs'
+            Action:
+              - ecr:GetDownloadUrlForLayer
+              - ecr:BatchGetImage
+              - ecr:BatchCheckLayerAvailability
+              - ecr:PutImage
+              - ecr:InitiateLayerUpload
+              - ecr:UploadLayerPart
+              - ecr:CompleteLayerUpload

@@ -1,0 +1,10 @@
+---
+  - name: ECR Stack
+    cloudformation:
+      stack_name: "{{ecr_name}}-ecr"
+      state: present
+      region: "{{aws_region}}"
+      template: "cloudformation/ecr.yml"
+      template_parameters:
+        RepositoryName: "{{ecr_name}}"
+        AccountARNs: "{{account_arns}}"

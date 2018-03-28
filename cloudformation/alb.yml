@@ -1,0 +1,88 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Setup an static Application Load Balancer
+Parameters:
+  LoadBalancerName:
+    Description: Name of the load balancer
+    Type: String
+  Subnets:
+    Description: The subnets which the ELB is hosted.
+    Type: CommaDelimitedList
+  VpcID:
+    Description: Id of the VPC
+    Type: String
+    AllowedPattern: vpc-[a-f0-9]{8}
+  Scheme:
+    Description: scheme of ELB
+    Type: String
+    Default: internet-facing
+  HealthCheckPath:
+    Type: String
+    Description: path of health check
+  TargetGroupName:
+    Type: String
+    Description: name of TargetGroup
+
+Resources:
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: ALB of application
+      SecurityGroupIngress:
+      - CidrIp: 0.0.0.0/0
+        IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+      - CidrIp: 0.0.0.0/0
+        IpProtocol: tcp
+        FromPort: 443
+        ToPort: 443
+      VpcId: !Ref 'VpcID'
+
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name:
+        Ref: LoadBalancerName
+      Scheme:
+        Ref: Scheme
+      Subnets:
+        Ref: Subnets
+      SecurityGroups:
+        - Ref: SecurityGroup
+
+  ALBListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+      - Type: forward
+        TargetGroupArn:
+          Ref: TargetGroup
+      LoadBalancerArn:
+        Ref: LoadBalancer
+      Port: '80'
+      Protocol: HTTP
+
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckIntervalSeconds: 10
+      HealthCheckPath:
+        Ref: HealthCheckPath
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 5
+      Name:
+        Ref: TargetGroupName
+      Port: 80
+      Protocol: HTTP
+      UnhealthyThresholdCount: 3
+      VpcId:
+        Ref: VpcID
+      TargetGroupAttributes:
+        - Key: deregistration_delay.timeout_seconds
+          Value: 120
+
+Outputs:
+  ELBEndpoint:
+    Description: ALB dns name.
+    Value: !GetAtt [LoadBalancer, DNSName]

@@ -1,0 +1,285 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Setup an ECS cluster
+Parameters:
+  ClusterName:
+    Description: Name of the cluster
+    Type: String
+  KeyPair:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
+  AMI:
+    Description: image id
+    Type: String
+  InstanceType:
+    Description: EC2 instance type.
+    Type: String
+  PrivateSubnets:
+    Type: CommaDelimitedList
+    Description: private subnets
+  AZs:
+    Type: CommaDelimitedList
+    Description: availability zones
+  MaxSizeASG:
+    Type: Number
+    Default: 8
+    Description: Maximum number of instances that can be launched in your ECS cluster
+  MinSizeASG:
+    Type: Number
+    Default: 1
+    Description: Minimum number of instances that can be launched in your ECS cluster
+  DesiredCapacity:
+    Type: Number
+    Default: 1
+    Description: Number of Desired Size AS instance
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: VPC id that used for deployment
+
+Resources:
+  ECSCluster:
+    Type: "AWS::ECS::Cluster"
+    Properties:
+      ClusterName:
+        Ref: ClusterName
+
+  ECSLaunchConfig:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Metadata:
+      AWS::CloudFormation::Init:
+        configSets:
+          InstallAndRun:
+          - Configure
+        Configure:
+          files:
+            "/etc/cfn/cfn-hup.conf":
+              content:
+                Fn::Join:
+                - ''
+                - - "[main]\n"
+                  - stack=
+                  - Ref: AWS::StackId
+                  - "\n"
+                  - region=
+                  - Ref: AWS::Region
+                  - "\n"
+                  - interval=1
+              mode: '000400'
+              owner: root
+              group: root
+            "/etc/ecs/ecs.config":
+              content:
+                Fn::Join:
+                - ''
+                - - ECS_CLUSTER=
+                  - Ref: ECSCluster
+              mode: '000755'
+              owner: root
+              group: root
+            "/etc/cfn/hooks.d/cfn-auto-reloader.conf":
+              content:
+                Fn::Join:
+                - ''
+                - - "[cfn-auto-reloader-hook]\n"
+                  - "triggers=post.update\n"
+                  - "path=Resources.ECSLaunchConfig.Metadata.AWS::CloudFormation::Init\n"
+                  - "action=/opt/aws/bin/cfn-init -v "
+                  - " --stack "
+                  - Ref: AWS::StackName
+                  - " --resource ECSLaunchConfig"
+                  - " --region "
+                  - Ref: AWS::Region
+                  - "\n"
+                  - "runas=root\n"
+          services:
+            sysvinit:
+              cfn-hup:
+                enabled: 'true'
+                ensureRunning: 'true'
+                files:
+                - "/etc/cfn/cfn-hup.conf"
+                - "/etc/cfn/hooks.d/cfn-auto-reloader.conf"
+    Properties:
+      KeyName:
+        Ref: KeyPair
+      ImageId:
+        Ref: AMI
+      InstanceType:
+        Ref: InstanceType
+      InstanceMonitoring: true
+      IamInstanceProfile:
+        Ref: EC2InstanceProfile
+      SecurityGroups:
+      - Ref: EC2SecurityGroup
+      UserData:
+        "Fn::Base64": !Sub |
+          #!/bin/bash -ex
+          ######--------------------------Install software----------------------######
+          /usr/bin/yum update -y
+          /usr/bin/yum install -y sysstat nmap telnet curl wget
+          /usr/bin/yum install -y aws-cfn-bootstrap
+          /usr/bin/easy_install awscli
+          export PATH=$PATH:/usr/local/bin/
+          ######-----------------------------Bootstrap--------------------------######
+          /opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --configsets InstallAndRun --resource ECSLaunchConfig
+          ######-----------------Configure Hostname on EC2 Host-----------------######
+          function configure_hosts {
+            recordName=${ClusterName}
+            instance_ip=$(/usr/bin/curl -q http://169.254.169.254/latest/meta-data/local-ipv4)
+            domain=$(/bin/awk '/^search/ { print $2 }' /etc/resolv.conf)
+            ipend=`/bin/echo $instance_ip | /bin/sed 's/\./\-/g'`
+            env=$(/bin/echo $domain | awk -F '.' '{print $1}')
+            /bin/echo "$instance_ip $recordName.$domain $recordName-$ipend">> /etc/hosts
+            /bin/hostname $recordName-$env-$ipend
+          }
+          configure_hosts
+          ######--------------------------Signal success------------------------######
+          /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource AutoScalingGroup --region ${AWS::Region}
+  EC2InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: "/"
+      Roles:
+      - Ref: EC2Role
+
+  EC2Role:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - ec2.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: "/"
+      Policies:
+      - PolicyName: ecs-service
+        PolicyDocument:
+          Statement:
+          - Effect: Allow
+            Action:
+            - ecs:CreateCluster
+            - ecs:DeregisterContainerInstance
+            - ecs:DiscoverPollEndpoint
+            - ecs:Poll
+            - ecs:RegisterContainerInstance
+            - ecs:StartTelemetrySession
+            - ecs:Submit*
+            - ec2:Describe*
+            - ecr:Get*
+            - ecr:BatchGetImage
+            - ecr:BatchCheckLayerAvailability
+            - ecr:PutImage
+            - ecr:InitiateLayerUpload
+            - ecr:UploadLayerPart
+            - ecr:CompleteLayerUpload
+            - ecr:ListImages
+            - ecr:Describe*
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+            Resource: "*"
+          - Effect: Allow
+            Action:
+            - s3:Get*
+            - s3:List*
+            Resource: "*"
+
+  EC2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: EC2SecurityGroup.
+      VpcId:
+        Ref: VpcId
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 32768
+        ToPort: 61000
+        CidrIp: 0.0.0.0/0
+
+  AutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      VPCZoneIdentifier:
+        Ref: PrivateSubnets
+      LaunchConfigurationName:
+        Ref: ECSLaunchConfig
+      AvailabilityZones:
+        Ref: AZs
+      Cooldown: 180
+      HealthCheckGracePeriod: 60
+      HealthCheckType: EC2
+      MinSize: !Ref MinSizeASG
+      MaxSize:  !Ref MaxSizeASG
+      DesiredCapacity: !Ref DesiredCapacity
+      Tags:
+      - Value: !Ref AWS::StackName
+        Key: CF-Name
+        PropagateAtLaunch: true
+      - Key: Name
+        Value: !Ref ClusterName
+        PropagateAtLaunch: true
+
+  EC2ScaleUpPolicy:
+    Type: AWS::AutoScaling::ScalingPolicy
+    Properties:
+      AdjustmentType: ChangeInCapacity
+      AutoScalingGroupName:
+        Ref: AutoScalingGroup
+      Cooldown: 300
+      ScalingAdjustment: 1
+
+  EC2ScaleDownPolicy:
+    Type: AWS::AutoScaling::ScalingPolicy
+    Properties:
+      AdjustmentType: ChangeInCapacity
+      AutoScalingGroupName:
+        Ref: AutoScalingGroup
+      Cooldown: 300
+      ScalingAdjustment: -1
+
+  EC2CPUHigh:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Scale-up if CPU > 60% for 10 minutes
+      MetricName: CPUUtilization
+      Namespace: AWS/EC2
+      Statistic: Average
+      Period: 60
+      EvaluationPeriods: 5
+      Threshold: 60
+      AlarmActions:
+      - Ref: EC2ScaleUpPolicy
+      Dimensions:
+      - Name: AutoScalingGroupName
+        Value:
+          Ref: AutoScalingGroup
+      ComparisonOperator: GreaterThanThreshold
+
+  EC2CPULow:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Scale-down if CPU < 40% for 10 minutes
+      MetricName: CPUUtilization
+      Namespace: AWS/EC2
+      Statistic: Average
+      Period: 60
+      EvaluationPeriods: 5
+      Threshold: 40
+      AlarmActions:
+      - Ref: EC2ScaleDownPolicy
+      Dimensions:
+      - Name: AutoScalingGroupName
+        Value:
+          Ref: AutoScalingGroup
+      ComparisonOperator: LessThanThreshold
+
+Outputs:
+  ClusterName:
+    Description: cluster name.
+    Value:
+      Ref: ClusterName

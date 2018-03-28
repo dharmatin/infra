@@ -1,0 +1,18 @@
+---
+  - name: Set up an ECS cluster
+    cloudformation:
+      stack_name: "{{cluster_name}}-cluster"
+      state: present
+      region: "{{aws_region}}"
+      template: "cloudformation/cluster.yml"
+      template_parameters:
+        VpcId: "{{aws_vpc_id}}"
+        KeyPair: "{{key_name}}"
+        AMI: "{{ami}}"
+        InstanceType: "{{instance_type}}"
+        PrivateSubnets: "{{private_subnets}}"
+        AZs: "{{zones}}"
+        MaxSizeASG: "{{max_asg}}"
+        MinSizeASG: "{{min_asg}}"
+        DesiredCapacity: "{{desired_asg_capacity}}"
+        ClusterName: "{{cluster_name}}"
