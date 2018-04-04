@@ -2,7 +2,7 @@ dns_hostname: web
 business_unit: ID
 application: front-newlaunch-api
 ab: "{{ env }}"
-ecs_instance_type: t2.medium
+ecs_instance_type: t2.small
 build: latest
 min_asg_size: 1
 max_asg_size: 3
