@@ -2,12 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="700bfd50-4fc5-4401-9912-b6855fa0f328" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/cloudformation/frontend-alb.yml" afterPath="$PROJECT_DIR$/cloudformation/frontend-alb.yml" />
-      <change beforePath="$PROJECT_DIR$/roles/alb-cleanup/tasks/alb-clean.sh" afterPath="$PROJECT_DIR$/roles/alb-cleanup/tasks/alb-clean.sh" />
-      <change beforePath="$PROJECT_DIR$/roles/alb-switch-new/tasks/alb-switch.sh" afterPath="$PROJECT_DIR$/roles/alb-switch-new/tasks/alb-switch.sh" />
-      <change beforePath="$PROJECT_DIR$/roles/alb-switch-new/tasks/health_check_new_inst_tg.txt" afterPath="$PROJECT_DIR$/roles/alb-switch-new/tasks/health_check_new_inst_tg.txt" />
-      <change beforePath="$PROJECT_DIR$/roles/alb-switch-new/tasks/list_elb_listener.txt" afterPath="$PROJECT_DIR$/roles/alb-switch-new/tasks/list_elb_listener.txt" />
-      <change beforePath="$PROJECT_DIR$/roles/alb-switch-new/tasks/list_elb_target_group.txt" afterPath="$PROJECT_DIR$/roles/alb-switch-new/tasks/list_elb_target_group.txt" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -18,93 +13,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="alb.yml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/cloudformation/alb.yml">
+      <file leaf-file-name="pipeline.yml" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/.buildkite/pipeline.yml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1245">
-              <caret line="83" column="40" lean-forward="false" selection-start-line="83" selection-start-column="40" selection-end-line="83" selection-end-column="40" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="web-frontend.yml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/inventory/stag/singapore/group_vars/web-frontend.yml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="210">
-              <caret line="14" column="13" lean-forward="false" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="frontend-alb.yml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/cloudformation/frontend-alb.yml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-855">
-              <caret line="417" column="39" lean-forward="true" selection-start-line="417" selection-start-column="39" selection-end-line="417" selection-end-column="39" />
-              <folding>
-                <marker date="1522823879538" expanded="true" signature="18235:18244" ph="PPPBuildEcr" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="main.yml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/roles/alb-cleanup/tasks/main.yml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="30">
-              <caret line="2" column="13" lean-forward="true" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="frontend-switch-elb.sh" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/scripts/frontend-switch-elb.sh">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="135">
-              <caret line="9" column="0" lean-forward="false" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="main.yml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/roles/alb-switch-new/tasks/main.yml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="30">
-              <caret line="2" column="42" lean-forward="false" selection-start-line="2" selection-start-column="42" selection-end-line="2" selection-end-column="42" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="alb-switch.sh" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/roles/alb-switch-new/tasks/alb-switch.sh">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="107">
-              <caret line="77" column="0" lean-forward="false" selection-start-line="77" selection-start-column="0" selection-end-line="82" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="alb-clean.sh" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/roles/alb-cleanup/tasks/alb-clean.sh">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="281">
-              <caret line="67" column="7" lean-forward="true" selection-start-line="67" selection-start-column="7" selection-end-line="67" selection-end-column="7" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="alb.yml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/inventory/stag/singapore/group_vars/alb.yml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="75">
-              <caret line="5" column="29" lean-forward="false" selection-start-line="5" selection-start-column="29" selection-end-line="5" selection-end-column="29" />
+            <state relative-caret-position="285">
+              <caret line="19" column="51" lean-forward="true" selection-start-line="19" selection-start-column="51" selection-end-line="19" selection-end-column="51" />
               <folding />
             </state>
           </provider>
@@ -147,11 +60,11 @@
         <option value="$PROJECT_DIR$/roles/frontend-alb/tasks/main.yml" />
         <option value="$PROJECT_DIR$/cloudformation/alb.yml" />
         <option value="$PROJECT_DIR$/inventory/stag/singapore/group_vars/web-frontend.yml" />
-        <option value="$PROJECT_DIR$/.buildkite/pipeline.yml" />
         <option value="$PROJECT_DIR$/inventory/stag/singapore/group_vars/alb.yml" />
         <option value="$PROJECT_DIR$/cloudformation/frontend-alb.yml" />
-        <option value="$PROJECT_DIR$/roles/alb-switch-new/tasks/alb-switch.sh" />
         <option value="$PROJECT_DIR$/roles/alb-cleanup/tasks/alb-clean.sh" />
+        <option value="$PROJECT_DIR$/roles/alb-switch-new/tasks/alb-switch.sh" />
+        <option value="$PROJECT_DIR$/.buildkite/pipeline.yml" />
       </list>
     </option>
   </component>
@@ -184,6 +97,11 @@
             <path>
               <item name="infra" type="b2602c69:ProjectViewProjectNode" />
               <item name="infra" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="infra" type="b2602c69:ProjectViewProjectNode" />
+              <item name="infra" type="462c0819:PsiDirectoryNode" />
+              <item name=".buildkite" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="infra" type="b2602c69:ProjectViewProjectNode" />
@@ -344,6 +262,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="797" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -354,7 +273,7 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32905984" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32905984" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32905984" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15665236" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -664,14 +583,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/.buildkite/pipeline.yml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="18" column="15" lean-forward="true" selection-start-line="18" selection-start-column="15" selection-end-line="18" selection-end-column="15" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/scripts/frontend-switch-elb.sh">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="135">
@@ -730,18 +641,26 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/roles/alb-switch-new/tasks/alb-switch.sh">
+    <entry file="file://$PROJECT_DIR$/roles/alb-cleanup/tasks/alb-clean.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="107">
-          <caret line="77" column="0" lean-forward="false" selection-start-line="77" selection-start-column="0" selection-end-line="82" selection-end-column="0" />
+        <state relative-caret-position="1005">
+          <caret line="67" column="7" lean-forward="true" selection-start-line="67" selection-start-column="7" selection-end-line="67" selection-end-column="7" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/roles/alb-cleanup/tasks/alb-clean.sh">
+    <entry file="file://$PROJECT_DIR$/roles/alb-switch-new/tasks/alb-switch.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="281">
-          <caret line="67" column="7" lean-forward="true" selection-start-line="67" selection-start-column="7" selection-end-line="67" selection-end-column="7" />
+        <state relative-caret-position="1215">
+          <caret line="81" column="2" lean-forward="true" selection-start-line="81" selection-start-column="2" selection-end-line="81" selection-end-column="2" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.buildkite/pipeline.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="19" column="51" lean-forward="true" selection-start-line="19" selection-start-column="51" selection-end-line="19" selection-end-column="51" />
           <folding />
         </state>
       </provider>
