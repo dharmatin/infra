@@ -15,7 +15,7 @@ high_pager_duty_arn:
 ssl_cert_arn:
 
 hp_ecr_repo: "{{ ecr_name }}"
-hp_service_count: "{{ min_asg_size + 1}}"
+hp_service_count: "{{ min_asg_size }}"
 hp_task_mem: 1936
 hp_task_cpu: 900
 logs_group_hp: awslogs-stag-newlaunch-api-id
