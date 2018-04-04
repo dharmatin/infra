@@ -1,0 +1,85 @@
+steps:
+  - label: ":construction: singapore-staging: create stack"
+    command: './scripts/frontend-create-stack.sh'
+    branches: 'master'
+    env:
+      ENV: stag
+      ENV_INT: stag
+      REGION: ap-southeast-1
+      BUILDKITE_BUILD_ECR: "${BUILDKITE_BUILD_ECR}"
+    agents:
+      queue: ipp-regional-web:ci
+      env: development
+      market: rumah123
+  - wait
+  - label: ":arrows_clockwise: singapore-staging: switch stack"
+    command: "./scripts/frontend-switch-elb.sh"
+    branches: 'master'
+    env:
+      ENV: stag
+      ENV_INT: stag
+      REGION: ap-southeast-1
+      BUILDKITE_BUILD_ECR: "${BUILDKITE_BUILD_ECR}"
+    agents:
+      queue: ipp-regional-web:ci
+      env: development
+      market: rumah123
+  - wait
+  - label: ":wastebasket: singapore-staging: cleanup stack"
+    command: "./scripts/frontend-cleanup-stack.sh"
+    branches: 'master'
+    env:
+      ENV: stag
+      ENV_INT: stag
+      REGION: ap-southeast-1
+      BUILDKITE_BUILD_ECR: "${BUILDKITE_BUILD_ECR}"
+    agents:
+      queue: ipp-regional-web:ci
+      env: development
+      market: rumah123
+  - wait
+  - block: ':pagerduty: deploy-production-sg'
+
+  - label: ":construction: singapore-production: create stack"
+    command: './scripts/frontend-create-stack.sh'
+    branches: 'master'
+    env:
+      ENV: prod-sg
+      ENV_INT: prod
+      REGION: ap-southeast-1
+      BUILDKITE_BUILD_ECR: "${BUILDKITE_BUILD_ECR}"
+    agents:
+      queue: ipp-regional-web:ci
+      env: development
+      market: rumah123
+  - wait
+
+  - block: ':pagerduty: switch-production'
+  - wait
+  - label: ":arrows_clockwise: singapore-production: switch stack"
+    command: "./scripts/frontend-switch-elb.sh"
+    branches: 'master'
+    env:
+      ENV: prod-sg
+      ENV_INT: prod
+      REGION: ap-southeast-1
+      BUILDKITE_BUILD_ECR: "${BUILDKITE_BUILD_ECR}"
+    agents:
+      queue: ipp-regional-web:ci
+      env: development
+      market: rumah123
+
+  - block: ':pagerduty: Clean-production'
+  - wait
+  - label: ":wastebasket: singapore-production: cleanup stack"
+    command: "./scripts/frontend-cleanup-stack.sh"
+    branches: 'master'
+    env:
+      ENV: prod-sg
+      ENV_INT: prod
+      REGION: ap-southeast-1
+      BUILDKITE_BUILD_ECR: "${BUILDKITE_BUILD_ECR}"
+    agents:
+      queue: ipp-regional-web:ci
+      env: development
+      market: rumah123

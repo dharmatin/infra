@@ -1,0 +1,46 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Build Kite Agent Role Stack
+Resources:
+  Role:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: "enquiries-api-build-agent"
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      Policies:
+        - PolicyName: ScriptInstanceIAMPolicy
+          PolicyDocument:
+            Statement:
+              Effect: "Allow"
+              Action:
+                - "cloudformation:*"
+                - "ec2:*"
+                - "ecs:*"
+                - "ecr:*"
+                - "iam:*"
+                - "autoScaling:*"
+                - "cloudWatch:*"
+                - "sts:*"
+                - "elasticLoadBalancing:*"
+                - "s3:*"
+                - "route53:*"
+                - "logs:*"
+                - "application-autoscaling:*"
+                - "batch:*"
+                - "lambda:*"
+                - "events:*"
+              Resource: "*"
+Outputs:
+  IAMRoleArn:
+    Description: build agent IAM role arn
+    Value:
+      Fn::GetAtt:
+        - "Role"
+        - "Arn"

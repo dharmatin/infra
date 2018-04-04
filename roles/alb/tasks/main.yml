@@ -1,14 +1,23 @@
 ---
   - name: Set up an Application Load Balancer
     cloudformation:
-      stack_name: "{{alb_name}}-alb"
+      stack_name: "{{alb_name}}-alb-{{env}}"
       state: present
       region: "{{aws_region}}"
       template: "cloudformation/alb.yml"
       template_parameters:
         VpcID: "{{aws_vpc_id}}"
         Subnets: "{{public_subnets}}"
-        LoadBalancerName: "{{alb_name}}"
+        LoadBalancerName: "{{alb_name}}-alb-{{env}}"
         Scheme: "{{scheme}}"
         HealthCheckPath: "{{healthcheck_path}}"
         TargetGroupName: "{{target_group_name}}"
+        VpcCidr: "{{vpc_cidr}}"
+        SslCertificate: "{{ssl_certificate}}"
+      tags:
+        Project: "{{project}}"
+        application: "{{application}}"
+        lob: "id"
+        env: "{{env}}"
+        stack_name: "{{alb_name}}-alb-{{env}}"
+        Business Unit: "{{business_unit}}"

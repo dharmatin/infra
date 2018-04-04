@@ -1,0 +1,29 @@
+
+application: enquiries-api
+ab: a
+business_unit: Global
+deployment_ecr: 676958722968.dkr.ecr.ap-southeast-1.amazonaws.com
+public_zone: dev-enquiries.api.iproperty.com.my
+new_relic_rpm: newrelic-sysmond-2.3.0.132-1.x86_64.rpm
+new_relic_license_key: 566728cdfcce12ad0fef0741a0b24d5bbd4ee3df
+ssl_cert_arn: arn:aws:acm:ap-southeast-1:726150208279:certificate/ad0ab6f2-f00f-451e-b08b-2d6395615c13 #Certificate for *.iproperty.com
+instance_profile_role: ecsInstanceRole
+
+
+service_count: 1
+task_mem: 512
+task_cpu: 768
+
+logs_group: awslogs-staging-enquiriesapi
+
+ami: ami-68097514
+key_name: api-enquiries-ipp-dev-sg
+resource_bucket_name: enquiries.api.iproperty.com-prod
+
+desired_asg_capacity: 1
+ecs_instance_type: t2.medium
+build: latest
+min_asg_size: 1
+max_asg_size: 2
+#ecr_repo: hp:latest
+elb_name: test-enquiries-api

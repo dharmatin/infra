@@ -21,21 +21,34 @@ Parameters:
   TargetGroupName:
     Type: String
     Description: name of TargetGroup
+  VpcCidr:
+    Type: String
+    Description: name of TargetGroup
+  SslCertificate:
+    Type: String
+    Description: Ssl Certificate Arn
 
 Resources:
   SecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: ALB of application
+      GroupDescription: !Join ['', ['SecurityGroup of', '-', !Ref 'LoadBalancerName']]
       SecurityGroupIngress:
       - CidrIp: 0.0.0.0/0
         IpProtocol: tcp
         FromPort: 80
         ToPort: 80
+        Description: 'HTTP-ALB-Port'
       - CidrIp: 0.0.0.0/0
         IpProtocol: tcp
         FromPort: 443
         ToPort: 443
+        Description: 'HTTPS-ALB-Port'
+      - IpProtocol: tcp
+        FromPort: '81'
+        ToPort: '90'
+        CidrIp: !Ref 'VpcCidr'
+        Description: 'Test-ALB-Port'
       VpcId: !Ref 'VpcID'
 
   LoadBalancer:
@@ -49,6 +62,9 @@ Resources:
         Ref: Subnets
       SecurityGroups:
         - Ref: SecurityGroup
+      Tags:
+      - Key: name
+        Value:  !Ref 'LoadBalancerName'
 
   ALBListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
@@ -57,10 +73,20 @@ Resources:
       - Type: forward
         TargetGroupArn:
           Ref: TargetGroup
-      LoadBalancerArn:
-        Ref: LoadBalancer
+      LoadBalancerArn: !Ref LoadBalancer
       Port: '80'
       Protocol: HTTP
+  ALBSslListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+      - Type: forward
+        TargetGroupArn: !Ref TargetGroup
+      LoadBalancerArn: !Ref LoadBalancer
+      Port: 443
+      Protocol: HTTPS
+      Certificates:
+      - CertificateArn: !Ref SslCertificate
 
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
@@ -80,7 +106,7 @@ Resources:
         Ref: VpcID
       TargetGroupAttributes:
         - Key: deregistration_delay.timeout_seconds
-          Value: 120
+          Value: 60
 
 Outputs:
   ELBEndpoint:

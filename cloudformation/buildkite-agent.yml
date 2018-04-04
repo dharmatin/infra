@@ -1,0 +1,200 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Build Kite Agent Stack
+Parameters:
+  AvailabilityZones:
+    Description: The availability zones in the VPC
+    Type: CommaDelimitedList
+  VpcID:
+    Description: The private Subnet ID in VPC that has connection to Equinix.
+    Type: String
+    AllowedPattern: vpc-[a-f0-9]{8}
+  Subnets:
+    Description: The private subnets in the VPC
+    Type: CommaDelimitedList
+  AMI:
+    Description: The AMI id of the Platform image.
+    Type: String
+    MinLength: '12'
+    MaxLength: '12'
+    AllowedPattern: ami-[a-f0-9]{8}
+  S3Repository:
+    Description: Name of S3 bucket hosting buildkite secrets
+    Type: String
+  InstanceKeyName:
+    Description: Name of an existing EC2 KeyPair to enable SSH access
+    Type: String
+  InstanceType:
+    Description: The Instance type which used to build stack.
+    Type: String
+  OvernightAgents:
+    Description: The number of agents to keep running 24/7
+    Type: Number
+    Default: 1
+  ASGMaxSize:
+    Description: AutoScaling max size
+    Type: Number
+    Default: 3
+  ASGMinSize:
+    Description: AutoScaling min size
+    Type: Number
+    Default: 1
+  StartAgentsCronSpec:
+    Description: The cron syntax schedule on which to start agents in their ASG (in UTC). Defaults to 7am local time.
+    Type: String
+    Default: 0 7 * * *
+  StopAgentsCronSpec:
+    Description: The cron syntax schedule on which to stop agents in their ASG (in UTC). Defaults to 11pm local time.
+    Type: String
+    Default: 0 23 * * *
+  BuildKiteAgentQueue:
+    Description: Build kite agent queue
+    Type: String
+  BuildKiteAgentsPerHost:
+    Description: Build kite agents count per host
+    Type: Number
+    Default: 3
+  BuildKiteWhiteListedReposRegex:
+    Description: Build kite white listed repos regex
+    Type: String
+    Default: git@git.realestate.com.au:ipp-my-sg/.*
+  Env:
+    Description: Environment the agent is deployed to
+    Type: String
+    Default: Unknown
+  Version:
+    Description: The version of this build
+    Type: String
+    Default: Unknown
+  BuildkiteAgentRole:
+    Description: The role of buildkite agent
+    Type: String
+    Default: Unknown
+Resources:
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - !Ref 'BuildkiteAgentRole'
+  AgentSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable inbound SSH
+      VpcId: !Ref 'VpcID'
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: 0.0.0.0/0
+  AgentAutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    UpdatePolicy:
+      AutoScalingRollingUpdate:
+        MinInstancesInService: '1'
+    Properties:
+      AvailabilityZones: !Ref 'AvailabilityZones'
+      LaunchConfigurationName: !Ref 'AgentLaunchConfiguration'
+      MinSize: !Ref 'ASGMinSize'
+      MaxSize: !Ref 'ASGMaxSize'
+      VPCZoneIdentifier: !Ref 'Subnets'
+      Tags:
+        - Key: CloudFormationStack
+          Value: !Ref 'AWS::StackName'
+          PropagateAtLaunch: true
+        - Key: CloudFormationStackId
+          Value: !Ref 'AWS::StackId'
+          PropagateAtLaunch: true
+        - Key: Name
+          Value: !Join ['-', [!Ref 'AWS::StackName', agent]]
+          PropagateAtLaunch: true
+        - Key: lob
+          Value: International
+          PropagateAtLaunch: true
+        - Key: application
+          Value: buildkite-agent
+          PropagateAtLaunch: true
+  ScheduledActionUp:
+    Type: AWS::AutoScaling::ScheduledAction
+    Properties:
+      AutoScalingGroupName: !Ref 'AgentAutoScalingGroup'
+      MaxSize: !Ref 'ASGMaxSize'
+      MinSize: !Ref 'ASGMinSize'
+      Recurrence: !Ref 'StartAgentsCronSpec'
+  ScheduledActionDown:
+    Type: AWS::AutoScaling::ScheduledAction
+    Properties:
+      AutoScalingGroupName: !Ref 'AgentAutoScalingGroup'
+      MaxSize: !Ref 'OvernightAgents'
+      MinSize: !Ref 'OvernightAgents'
+      Recurrence: !Ref 'StopAgentsCronSpec'
+  AgentLaunchConfiguration:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Properties:
+      InstanceType: !Ref 'InstanceType'
+      ImageId: !Ref 'AMI'
+      SecurityGroups:
+        - !Ref 'AgentSecurityGroup'
+      KeyName: !Ref 'InstanceKeyName'
+      IamInstanceProfile: !Ref 'InstanceProfile'
+      BlockDeviceMappings:
+      - DeviceName: /dev/xvda
+        Ebs:
+          VolumeSize: '40'
+          VolumeType: gp2
+          DeleteOnTermination: 'true'
+      UserData:
+        "Fn::Base64": !Sub |
+          #!/bin/bash -ex
+
+          function error_exit
+          {
+            /bin/echo -e '######--------------------------Signal success------------------------###### \n\n '
+            /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource AgentAutoScalingGroup --region ${AWS::Region}
+            exit 1
+          }
+
+          yum install -y aws-cli docker || error_exit 'failed to install aws-cli'
+          service docker start || error_exit 'failed to start docker'
+          mkdir -p /etc/buildkite-agent/
+
+          function generate_agent_conf
+          {
+            aws s3 cp "s3://${S3Repository}/buildkite/buildkite-secret.tgz" /tmp/buildkite-secret.tgz --region ${AWS::Region}
+            mkdir /tmp/buildkite && tar zxvf /tmp/buildkite-secret.tgz -C /tmp/buildkite
+
+            agentToken=$(cat /tmp/buildkite/buildkite-secret/agent-token)
+            cat <<- EOF > /etc/buildkite-agent/buildkite-agent.cfg
+             token= "$agentToken"
+             meta-data= "queue=${BuildKiteAgentQueue},docker=true,ci=true,env=${Env},region=${AWS::Region},version=${Version}"
+             meta-data-ec2=true
+             debug=true
+          EOF
+          }
+
+          function generate_ssh_config
+          {
+            cat <<- EOF > /tmp/buildkite/config
+             Host git.realestate.com.au
+             Port 65422
+             IdentityFile ~/.ssh/id_rsa
+             StrictHostKeyChecking no
+          EOF
+          }
+
+          generate_agent_conf || error_exit 'failed to generate_agent_conf'
+          generate_ssh_config  || error_exit 'failed to generate_ssh_config'
+
+          for i in {1..${BuildKiteAgentsPerHost}}
+          do
+          docker run -d --restart always \
+           --hostname ipp-my-sg-buildkite-agent-${Env}-${AWS::Region}-${Version}-$i \
+           -v /tmp/buildkite/buildkite-secret/id_rsa:/root/.ssh/id_rsa \
+           -v /tmp/buildkite/config:/root/.ssh/config \
+           -v /var/run/docker.sock:/var/run/docker.sock \
+           -v /etc/buildkite-agent:/etc/buildkite-agent \
+           -v /buildkite/builds:/buildkite/builds \
+           -v /deployer:/deployer \
+           -v /dev/shm:/dev/shm \
+           -v /tmp/.m2:/root/.m2 \
+            buildkite/agent:3
+          done

@@ -1,0 +1,21 @@
+---
+business_unit: ID
+project: newlaunch.api-id
+application: front-newlaunch-api
+env: stag
+env_invent: stag
+market: id
+
+aws_region: ap-southeast-1
+aws_vpc_id: vpc-ff822b96
+
+public_subnets: subnet-f6822b9f,subnet-b732b3de
+private_subnets: subnet-c8822ba1,subnet-4c9f3625
+zones: ap-southeast-1a,ap-southeast-1b
+
+key_name: newlaunch-api-id-stag
+vpc_cidr: 10.10.0.0/16
+vpc_dns: 10.10.0.2
+
+ecr_name: newlaunch-api-id
+account_arns: 726150208279

@@ -1,0 +1,30 @@
+---
+  - name: setup buildkite-agent stack
+    cloudformation:
+      stack_name: "{{application}}-{{env}}-{{ab}}-{{version}}"
+      state: present
+      region: "{{aws_region}}"
+      disable_rollback: true
+      template: "cloudformation/buildkite-agent.yml"
+      stack_policy: "policies/cloudformation/stack-policy.json"
+      template_parameters:
+        AvailabilityZones: "{{zones}}"
+        VpcID: "{{aws_vpc_id}}"
+        Subnets: "{{private_subnets}}"
+        AMI: "{{ami}}"
+        S3Repository: "{{resource_bucket_name}}"
+        InstanceKeyName: "{{key_name}}"
+        InstanceType: "{{instance_type}}"
+        ASGMaxSize: "{{as_max}}"
+        ASGMinSize: "{{as_min}}"
+        BuildKiteAgentQueue: "{{buildkite_agent_queue}}"
+        BuildKiteAgentsPerHost: "{{buildkite_agents_per_host}}"
+        BuildKiteWhiteListedReposRegex: "{{buildkite_whitelisted_repos_regex}}"
+        BuildkiteAgentRole: "{{buildkite_agent_role}}"
+        Env: "{{env}}"
+        Version: "{{version}}"
+      tags:
+        project: "{{project}}"
+        application: "{{application}}"
+        lob: "{{project}}"
+        env: "{{env}}"

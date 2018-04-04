@@ -1,0 +1,9 @@
+application: buildkite-agent-{{env}}
+instance_type: t2.micro
+buildkite_agent_queue: api-enquiries-ipp:ci
+buildkite_agents_per_host: '1'
+buildkite_whitelisted_repos_regex: $git@git.realestate.com.au:ipp-my-sg/.*
+as_max: '1'
+as_min: '1'
+ab: a
+buildkite_agent_role: enquiries-api-build-agent

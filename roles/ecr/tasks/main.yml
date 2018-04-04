@@ -1,10 +1,18 @@
 ---
-  - name: ECR Stack
+  - name: ECR Images Stack
     cloudformation:
-      stack_name: "{{ecr_name}}-ecr"
+      stack_name: "ecr-{{item}}-{{aws_region}}"
       state: present
       region: "{{aws_region}}"
       template: "cloudformation/ecr.yml"
       template_parameters:
         RepositoryName: "{{ecr_name}}"
         AccountARNs: "{{account_arns}}"
+      tags:
+        Project: "{{project}}"
+        application: "{{application}}"
+        env: "{{env}}"
+        stack_name: "ecr-{{item}}-{{aws_region}}"
+        Business Unit: "{{business_unit}}"
+    with_items:
+      - "{{ecr_name}}"

@@ -1,0 +1,575 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >-
+    Install the frontend stack for all environments
+Parameters:
+  BusinessUnit:
+    Type: String
+    Description: Two letters country code for billing purpose
+    AllowedValues:
+      - MY
+      - SG
+      - ID
+  DesiredCapacity:
+    Type: Number
+    Default: '2'
+    Description: Number of Desired Size AS instance
+  ECRRegistry:
+    Description: Main ECR Registry
+    Type: String
+  HpECRRepo:
+    Description: Homepage ECR Repo
+    Type: String
+  HpBuildEcr:
+    Description: Homepage image build number
+    Type: String
+  Instancestype:
+    Description: EC2 instance type.
+    Type: String
+    AllowedValues:
+      - t2.small
+      - t2.medium
+      - m3.medium
+      - m3.large
+      - m4.large
+      - m4.xlarge
+      - m4.2xlarge
+      - c4.large
+      - c4.xlarge
+      - c4.2xlarge
+  KeyNamessh:
+    Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
+    Type: 'AWS::EC2::KeyPair::KeyName'
+    ConstraintDescription: must be the name of an existing EC2 KeyPair.
+  MinSizeAS:
+    Type: Number
+    Default: '2'
+    Description: Number of Min Size AS instance
+  MaxSize:
+    Type: Number
+    Default: '4'
+    Description: Maximum number of instances that can be launched in your ECS cluster.
+  NewRelicLicenseKey:
+    Description: New Relic License Key
+    Type: String
+  NewRelicRPM:
+    Description: New Relic RPM
+    Type: String
+  PagerDutyArn:
+    Description: Pager Duty ARN
+    Type: String
+  HPagerDutyArn:
+    Description: Pager Duty ARN
+    Type: String
+  RecordName:
+    Description: The name of the DNS record to create.
+    Type: String
+  ResourceBucketName:
+    Description: >-
+      Name of the S3 bucket to retrieve the downloaded scripts or installation files
+    Type: String
+  SSLCertificateARN:
+    Description: The SSL certificate ARN as specified in Route 53
+    Type: String
+  SubnetID:
+    Description: Public subnets
+    Type: CommaDelimitedList
+  SumoLogicAccessId:
+    Description: Sumo Logic access id
+    Type: String
+  SumoLogicAccessKey:
+    Description: Sumo Logic access key
+    Type: String
+  VPC:
+    Description: Choose which VPC we should be deploying the stack to
+    Type: 'AWS::EC2::VPC::Id'
+  VpcCidr:
+    Description: Enter VPC Cidr
+    Type: String
+  VpcDns:
+    Description: Enter VPC DNS must be end with X.X.0.2
+    Type: String
+  HpserviceCount:
+    Description: >-
+      Enter Hpservice Container Count - Must be equal to no. of instance in AutoScaling
+    Type: String
+  Env:
+    Description: Environment name
+    Type: String
+  Version:
+    Description: Version string to display in header
+    Type: String
+  AwslogsGroupHp:
+    Description: Cloudwatch Group Name for Hp Container
+    Type: String
+  InstProfile:
+    Description: Instance Profile Detail
+    Type: String
+  Project:
+    Description: Project Detail
+    Type: String
+  Hptaskmem:
+    Description: Hp Container Memory
+    Type: Number
+  Hptaskcpu:
+    Description: Hp Container Cpu
+    Type: Number
+  AlbLoadBalancer:
+    Description: Enquiry api load balancer
+    Type: String
+  HpTargetGroupPort:
+    Description: Hp listener port number
+    Type: Number
+
+Mappings:
+  AWSRegionArch2AMI:
+    ap-southeast-1:
+      HVM64: ami-acbcefd0
+    ap-northeast-1:
+      HVM64: ami-5add893c
+    ap-southeast-2:
+      HVM64: ami-4cc5072e
+
+Resources:
+  ECSCluster:
+    Type: AWS::ECS::Cluster
+  ECSScaleUpPolicy:
+    Type: 'AWS::AutoScaling::ScalingPolicy'
+    Properties:
+      AdjustmentType: PercentChangeInCapacity
+      MinAdjustmentStep: 1
+      AutoScalingGroupName: !Ref ECSAutoScalingGroup
+      Cooldown: 300
+      ScalingAdjustment: 25
+  ECSScaleDownPolicy:
+    Type: 'AWS::AutoScaling::ScalingPolicy'
+    Properties:
+      AdjustmentType: PercentChangeInCapacity
+      MinAdjustmentStep: 1
+      AutoScalingGroupName: !Ref ECSAutoScalingGroup
+      Cooldown: 300
+      ScalingAdjustment: -25
+  EcsCPUReservationHighAlarm:
+    Type: 'AWS::CloudWatch::Alarm'
+    Properties:
+      AlarmDescription: 'Average CPU utilization over 5 minutes higher than 90%'
+      AlarmName: !Join ['', ['ECS-CPU>90%', '-', !Ref 'ECSCluster']]
+      Namespace: 'AWS/ECS'
+      Dimensions:
+      - Name: ClusterName
+        Value: !Ref ECSCluster
+      MetricName: CPUUtilization
+      ComparisonOperator: GreaterThanThreshold
+      Statistic: Average
+      Period: 60
+      EvaluationPeriods: 5
+      Threshold: 90
+      AlarmActions:
+      - !Ref ECSScaleUpPolicy
+  EcsCPUReservationLowAlarm:
+    Type: 'AWS::CloudWatch::Alarm'
+    Properties:
+      AlarmDescription: 'Average CPU utilization over last 10 minutes less than 20%'
+      AlarmName: !Join ['', ['ECS-CPU<20%', '-', !Ref 'ECSCluster']]
+      Namespace: 'AWS/ECS'
+      Dimensions:
+      - Name: ClusterName
+        Value: !Ref ECSCluster
+      MetricName: CPUUtilization
+      ComparisonOperator: LessThanThreshold
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 20
+      AlarmActions:
+      - !Ref ECSScaleDownPolicy
+
+  ECSAutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      VPCZoneIdentifier:
+        Ref: SubnetID
+      LaunchConfigurationName:
+        Ref: ContainerInstances
+      AvailabilityZones: [!Select [0, !GetAZs ''], !Select [1, !GetAZs '']]
+      Cooldown: '40'
+      HealthCheckGracePeriod: '60'
+      HealthCheckType: EC2
+      MetricsCollection:
+      - Granularity: 1Minute
+        Metrics:
+        - GroupMinSize
+        - GroupMaxSize
+        - GroupDesiredCapacity
+        - GroupInServiceInstances
+        - GroupPendingInstances
+        - GroupTotalInstances
+        - GroupTerminatingInstances
+        - GroupStandbyInstances
+      MinSize:
+        Ref: MinSizeAS
+      MaxSize:
+        Ref: MaxSize
+      DesiredCapacity:
+        Ref: DesiredCapacity
+      Tags:
+      - Value:
+          Ref: AWS::StackName
+        Key: CF-Name
+        PropagateAtLaunch: true
+      - Value:
+          Ref: AWS::StackName
+        Key: Name
+        PropagateAtLaunch: true
+    CreationPolicy:
+      ResourceSignal:
+        Timeout: PT5M
+    UpdatePolicy:
+      AutoScalingRollingUpdate:
+        MinInstancesInService: '1'
+        MaxBatchSize: '1'
+        PauseTime: PT15M
+        WaitOnResourceSignals: 'true'
+
+  ContainerInstances:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Metadata:
+      AWS::CloudFormation::Init:
+        configSets:
+          InstallAndRun: [Configure]
+        Configure:
+          files:
+            "/etc/cfn/cfn-hup.conf":
+              content: !Sub |
+                [main]
+                stack= ${AWS::StackId}
+                region=${AWS::Region}
+              mode: "000400"
+              owner: "root"
+              group: "root"
+            "/etc/cfn/hooks.d/cfn-auto-reloader.conf":
+              content: !Sub |
+                [cfn-auto-reloader-hook]
+                triggers=post.update
+                path=Resources.ContainerInstances.Metadata.AWS::CloudFormation::Init
+                action=/opt/aws/bin/cfn-init -s ${AWS::StackName}  -r ContainerInstances --configsets InstallAndRun --region ${AWS::Region} runas=root
+              mode: "000400"
+              owner: "root"
+              group: "root"
+          services:
+            sysvinit:
+              cfn-hup:
+                enabled: 'true'
+                ensureRunning: 'true'
+                files: ["/etc/cfn/cfn-hup.conf" , "/etc/cfn/hooks.d/cfn-auto-reloader.conf"]
+              sendmail:
+                enabled: 'false'
+                ensureRunning: 'false'
+    Properties:
+      KeyName:
+        Ref: KeyNamessh
+      ImageId:
+        Fn::FindInMap:
+        - AWSRegionArch2AMI
+        - Ref: AWS::Region
+        - HVM64
+      InstanceType:
+        Ref: Instancestype
+      InstanceMonitoring: true
+      AssociatePublicIpAddress: 'true'
+      IamInstanceProfile: !Ref 'InstProfile'
+      SecurityGroups:
+      - Ref: ECSSecurityGroup
+      UserData:
+        "Fn::Base64": !Sub |
+          #!/bin/bash -ex
+          /bin/echo -e '######--------------------------Install software----------------------###### \n'
+          /usr/bin/yum update -y
+          /usr/bin/yum install -y curl wget aws-cfn-bootstrap
+          /usr/bin/easy_install awscli
+          /opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --configsets InstallAndRun --resource ContainerInstances
+          /bin/echo -e '######-----------------Configure Hostname on EC2 Host-----------------###### \n'
+          function configure_hosts {
+            recordName=${RecordName}
+            project=${Project}
+            instance_ip=$(/usr/bin/curl -q http://169.254.169.254/latest/meta-data/local-ipv4)
+            domain=$(/bin/awk '/^search/ { print $2 }' /etc/resolv.conf)
+            ipend=`/bin/echo $instance_ip | /bin/sed 's/\./\-/g'`
+            /bin/echo "$instance_ip $recordName.$domain $recordName-$ipend">> /etc/hosts
+            /bin/hostname $recordName-$ipend
+          }
+          configure_hosts
+          /bin/echo -e '\n\n####  -----         Environment variable is ${Env}        ------------###### \n'
+          /usr/local/bin/aws s3 cp s3://${ResourceBucketName}/newrelic/${NewRelicRPM} /tmp/${NewRelicRPM} --region ${AWS::Region}
+          /bin/rpm -vhi /tmp/${NewRelicRPM}
+          /usr/sbin/usermod  -a -G docker newrelic
+          /usr/sbin/nrsysmond-config --set license_key=${NewRelicLicenseKey}
+          /bin/echo hostname=$(/bin/hostname ) >> /etc/newrelic/nrsysmond.cfg
+          /etc/init.d/newrelic-sysmond start
+          /bin/echo -e '#####------------- Final config steps for logging and ecs cluster---- ###### \n\n'
+          /bin/sed -i 's/1024:4096/1024:4096 --log-opt max-size=100m  --log-opt max-file=5/g' /etc/sysconfig/docker
+          /bin/echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config
+          /bin/echo ECS_LOGLEVEL=error  >> /etc/ecs/ecs.config
+          /etc/init.d/docker restart
+          /bin/echo -e '#### ------------  Testing of New relic agent info       ----------   ###### \n'
+          /bin/ps aux | grep newrelic
+          /bin/rm -f /tmp/${NewRelicRPM}
+          /bin/echo -e '#### -------------------------- Service autostart-------------------  ####### \n'
+          /sbin/chkconfig newrelic-sysmond on
+          /bin/echo -e '######--------------------------Signal success------------------------###### \n\n '
+          /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource ECSAutoScalingGroup --region ${AWS::Region}
+
+  AutoscalingRole:
+    DependsOn: 'ECSAutoScalingGroup'
+    Type: 'AWS::IAM::Role'
+    Properties:
+      ManagedPolicyArns:
+      - 'arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceAutoscaleRole'
+      - 'arn:aws:iam::aws:policy/AutoScalingFullAccess'
+      - 'arn:aws:iam::aws:policy/AWSCloudFormationReadOnlyAccess'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: 'application-autoscaling.amazonaws.com'
+          Action: 'sts:AssumeRole'
+      Path: /
+      Policies:
+      - PolicyName: 'CloudformationInstancesignal'
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+          - Effect: Allow
+            Action:
+            - cloudformation:DescribeStackResource
+            - cloudformation:SignalResource
+            Resource:
+            - '*'
+
+  ECSServiceRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      ManagedPolicyArns:
+      - 'arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceRole'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: 'ecs.amazonaws.com'
+          Action: 'sts:AssumeRole'
+
+  HpServiceScalingTarget:
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
+    DependsOn: 'AutoscalingRole'
+    Properties:
+      MaxCapacity: !Ref 'MaxSize'
+      MinCapacity: !Ref 'MinSizeAS'
+      ResourceId: !Sub
+      - 'service/${Cluster}/${Service}'
+      - Cluster: !Ref 'ECSCluster'
+        Service: !GetAtt 'HPService.Name'
+      RoleARN: !GetAtt 'AutoscalingRole.Arn'
+      ScalableDimension: 'ecs:service:DesiredCount'
+      ServiceNamespace: ecs
+
+  HpServiceScalingUpPolicy:
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Properties:
+      PolicyName: !Sub '${AWS::StackName}-scale-up'
+      PolicyType: StepScaling
+      ScalingTargetId: !Ref 'HpServiceScalingTarget'
+      StepScalingPolicyConfiguration:
+        AdjustmentType: PercentChangeInCapacity
+        Cooldown: 300
+        MinAdjustmentMagnitude: 1
+        StepAdjustments:
+        - MetricIntervalLowerBound: 0
+          ScalingAdjustment: 25
+
+  HpServiceScalingDownPolicy:
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Properties:
+      PolicyName: !Sub '${AWS::StackName}-scale-down'
+      PolicyType: StepScaling
+      ScalingTargetId: !Ref 'HpServiceScalingTarget'
+      StepScalingPolicyConfiguration:
+        AdjustmentType: PercentChangeInCapacity
+        Cooldown: 300
+        MinAdjustmentMagnitude: 1
+        StepAdjustments:
+        - MetricIntervalLowerBound: 0
+          ScalingAdjustment: -25
+
+  ECSHpHigh:
+    Type: AWS::CloudWatch::Alarm
+    DependsOn: 'HPService'
+    Properties:
+      AlarmDescription: 'Scale-up if MemoryUtilization  70% for 1 minutes ECSHpHigh '
+      AlarmName: !Join ['', ['ECSHpHigh-Mem-70%', '-', !Ref 'Env', '-', !Ref 'Version']]
+      MetricName: 'MemoryUtilization'
+      Namespace: 'AWS/ECS'
+      Statistic: Average
+      Period: '60'
+      EvaluationPeriods: '1'
+      Threshold: '70'
+      AlarmActions:
+      - Ref: 'HpServiceScalingUpPolicy'
+      Dimensions:
+      - Name: ClusterName
+        Value: !Ref 'ECSCluster'
+      - Name: ServiceName
+        Value: !GetAtt 'HPService.Name'
+      ComparisonOperator: GreaterThanThreshold
+
+  ECSHPMemLow:
+    Type: AWS::CloudWatch::Alarm
+    DependsOn: 'HPService'
+    Properties:
+      AlarmDescription: 'Scale-Down if MemoryUtilization  25% for 5 minutes ECSHPMemLow '
+      AlarmName: !Join ['', ['ECSHPMemLow-Mem-25%', '-', !Ref 'Env', '-', !Ref 'Version']]
+      MetricName: 'MemoryUtilization'
+      Namespace: 'AWS/ECS'
+      Statistic: Average
+      Period: '300'
+      EvaluationPeriods: '1'
+      Threshold: '25'
+      AlarmActions:
+      - Ref: 'HpServiceScalingDownPolicy'
+      Dimensions:
+      - Name: ClusterName
+        Value: !Ref 'ECSCluster'
+      - Name: ServiceName
+        Value: !GetAtt 'HPService.Name'
+      ComparisonOperator: LessThanThreshold
+
+  ECSSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: ECSSecurityGroup.
+      VpcId: !Ref 'VPC'
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: '22'
+        ToPort: '22'
+        CidrIp: !Ref 'VpcCidr'
+        Description: 'SSH-Port'
+      - IpProtocol: tcp
+        FromPort: '9000'
+        ToPort: '9000'
+        CidrIp: !Ref 'VpcCidr'
+        Description: 'Application-Port'
+      - IpProtocol: tcp
+        FromPort: '80'
+        ToPort: '80'
+        CidrIp: !Ref 'VpcCidr'
+        Description: 'HTTP-ELB-Port'
+      - IpProtocol: tcp
+        FromPort: '443'
+        ToPort: '443'
+        CidrIp: !Ref 'VpcCidr'
+        Description: 'HTTPS-ELB-Port'
+      - IpProtocol: tcp
+        FromPort: !Ref 'HpTargetGroupPort'
+        ToPort: !Ref 'HpTargetGroupPort'
+        CidrIp: !Ref 'VpcCidr'
+        Description: 'HTTP-ALB-Port'
+      - IpProtocol: tcp
+        FromPort: '32768'
+        ToPort: '42000'
+        CidrIp: !Ref 'VpcCidr'
+        Description: 'ECS-ALB-Service-port'
+      - IpProtocol: icmp
+        FromPort: "-1"
+        ToPort: "-1"
+        CidrIp: !Ref 'VpcCidr'
+        Description: 'Ping-Port'
+      Tags:
+      - Value: 'ECS-Instance-SecurityGroup'
+        Key: Name
+
+  HpTargetGroup:
+    Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
+    Properties:
+      HealthCheckIntervalSeconds: 30
+      HealthCheckPath: '/status/heartbeat'
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 8
+      HealthyThresholdCount: 2
+      UnhealthyThresholdCount: 8
+      Matcher:
+        HttpCode: '200-301'
+      Port: !Ref 'HpTargetGroupPort'
+      Protocol: HTTP
+      VpcId: !Ref 'VPC'
+      TargetGroupAttributes:
+      - Key: 'deregistration_delay.timeout_seconds'
+        Value: 20
+  HpHttpListener:
+    Type: 'AWS::ElasticLoadBalancingV2::Listener'
+    Properties:
+      DefaultActions:
+      - TargetGroupArn: !Ref HpTargetGroup
+        Type: forward
+      LoadBalancerArn: !Ref AlbLoadBalancer
+      Port: !Ref 'HpTargetGroupPort'
+      Protocol: HTTP
+  HpListenerRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      Actions:
+        - TargetGroupArn: !Ref 'HpTargetGroup'
+          Type: forward
+      Conditions:
+        - Field: path-pattern
+          Values:
+          - "*"
+      ListenerArn: !Ref HpHttpListener
+      Priority: 1
+
+  HPService:
+    Type: AWS::ECS::Service
+    DependsOn: [ECSAutoScalingGroup, HpHttpListener]
+    Properties:
+      Cluster:
+        Ref: ECSCluster
+      DesiredCount: !Ref HpserviceCount
+      DeploymentConfiguration:
+        MaximumPercent: '150'
+        MinimumHealthyPercent: '50'
+      LoadBalancers:
+      - ContainerName: ECS-HP-TASK
+        ContainerPort: '9000'
+        TargetGroupArn: !Ref 'HpTargetGroup'
+      Role: !Ref 'ECSServiceRole'
+      TaskDefinition:
+        Ref: HPtaskdefinition
+
+  HPtaskdefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      ContainerDefinitions:
+      - Name: ECS-HP-TASK
+        Memory: !Ref Hptaskmem
+        MemoryReservation: '256'
+        Essential: true
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            'awslogs-region': !Ref 'AWS::Region'
+            'awslogs-group': !Ref 'AwslogsGroupHp'
+            'awslogs-stream-prefix': !Ref 'AWS::StackName'
+        PortMappings:
+        - HostPort: '0'
+          Protocol: tcp
+          ContainerPort: '9000'
+        Environment:
+        - Name: NODE_ENV
+          Value: !Sub '${Env}'
+        - Name: NEW_RELIC_LICENSE_KEY
+          Value: !Sub '${NewRelicLicenseKey}'
+        - Name: NEW_RELIC_APP_NAME
+          Value: !Join ['', [!Ref 'Project', '-', !Ref 'Env', '-' ,'HP']]
+        Image: !Join ['', [!Ref 'ECRRegistry', '/', !Ref 'HpECRRepo', ':', !Ref 'HpBuildEcr']]
+

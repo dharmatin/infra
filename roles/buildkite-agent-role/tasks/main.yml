@@ -1,0 +1,14 @@
+---
+  - name: setup buildkite-agent role stack
+    cloudformation:
+      stack_name: "{{application}}-{{env}}-{{project}}role"
+      state: present
+      region: "{{aws_region}}"
+      disable_rollback: true
+      template: "cloudformation/buildkite-agent-role.yml"
+      stack_policy: "policies/cloudformation/stack-policy.json"
+      tags:
+        project: "{{project}}"
+        application: "{{application}}"
+        env: "{{env}}"
+        market: "{{market}}"
