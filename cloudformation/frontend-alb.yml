@@ -406,14 +406,14 @@ Resources:
     Type: AWS::CloudWatch::Alarm
     DependsOn: 'HPService'
     Properties:
-      AlarmDescription: 'Scale-up if MemoryUtilization  70% for 1 minutes ECSHpHigh '
-      AlarmName: !Join ['', ['ECSHpHigh-Mem-70%', '-', !Ref 'Env', '-', !Ref 'Version']]
+      AlarmDescription: 'Scale-up if MemoryUtilization  80% for 2 minutes ECSHpHigh '
+      AlarmName: !Join ['', ['ECSHpHigh-Mem-80%', '-', !Ref 'Env', '-', !Ref 'Version']]
       MetricName: 'MemoryUtilization'
       Namespace: 'AWS/ECS'
       Statistic: Average
       Period: '60'
-      EvaluationPeriods: '1'
-      Threshold: '70'
+      EvaluationPeriods: '2'
+      Threshold: '80'
       AlarmActions:
       - Ref: 'HpServiceScalingUpPolicy'
       Dimensions:

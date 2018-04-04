@@ -62,15 +62,12 @@ list_env_stack ()
     done
     rm ./all_stack.txt ./health_check_old_inst_tg.txt ./list_elb_target_group.txt ./list_elb_listener.txt
 }
-if [ $2 == "dev" ] && [ $1 == "arn:aws:elasticloadbalancing:ap-southeast-1:726150208279:loadbalancer/app/enquiries-api-alb-dev/b78808a95aa8567d" ]; then
- echo -e " env is dev"
-elif [ $2 == "stag" ] && [ $1 == "arn:aws:elasticloadbalancing:ap-southeast-1:726150208279:loadbalancer/app/enquiries-api-alb-stag/b8ee341943cfcb21" ]; then
+if [ $2 == "stag" ] && [ $1 == "arn:aws:elasticloadbalancing:ap-southeast-1:726150208279:loadbalancer/app/newlaunch-api-id-alb-stag/413a99f4de2a5086" ]; then
  echo -e " env is stag "
-elif [ $2 == "prod-sg" ] && [ $1 == "arn:aws:elasticloadbalancing:ap-southeast-1:726150208279:loadbalancer/app/enquiries-api-alb-prod-sg/ae2fcc36b834255b" ]; then
- echo -e " env is prod-sg "
 else
  exit 1
 fi
+
 
 list_elb_listener
 live_listener

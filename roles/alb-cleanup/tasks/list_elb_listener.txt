@@ -1,3 +1,2 @@
 80	arn:aws:elasticloadbalancing:ap-southeast-1:726150208279:listener/app/newlaunch-api-id-alb-stag/413a99f4de2a5086/71a6327b7e92e204
-81	arn:aws:elasticloadbalancing:ap-southeast-1:726150208279:listener/app/newlaunch-api-id-alb-stag/413a99f4de2a5086/c4718e58260c6169
 443	arn:aws:elasticloadbalancing:ap-southeast-1:726150208279:listener/app/newlaunch-api-id-alb-stag/413a99f4de2a5086/f2a6adeab9a96867

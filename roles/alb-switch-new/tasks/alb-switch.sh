@@ -70,17 +70,13 @@ function modify_listener {
   aws elbv2 modify-listener --listener-arn ${live_list} --default-actions Type=forward,TargetGroupArn=${new_tg} --region ${aws_region}
   aws elbv2 modify-listener --listener-arn ${ssl_live_list} --default-actions Type=forward,TargetGroupArn=${new_tg} --region ${aws_region}
   health_check_new_tg
-  rm ./health_check_old_inst_tg.txt  ./health_check_new_inst_tg.txt ./list_elb_target_group.txt list_elb_listener.txt
+  rm ./health_check_old_inst_tg.txt  ./health_check_new_inst_tg.txt ./list_elb_target_group.txt ./list_elb_listener.txt ./health_check_new_inst_tg.txt
 }
 function remove_listener {
   aws elbv2 delete-listener --listener-arn ${new_list} --region ${aws_region}
 }
-if [ $2 == "dev" ] && [ $1 == "arn:aws:elasticloadbalancing:ap-southeast-1:726150208279:loadbalancer/app/enquiries-api-alb-dev/b78808a95aa8567d" ]; then
- echo -e " env is dev"
-elif [ $2 == "stag" ] && [ $1 == "arn:aws:elasticloadbalancing:ap-southeast-1:726150208279:loadbalancer/app/newlaunch-api-id-alb-stag/413a99f4de2a5086" ]; then
+if [ $2 == "stag" ] && [ $1 == "arn:aws:elasticloadbalancing:ap-southeast-1:726150208279:loadbalancer/app/newlaunch-api-id-alb-stag/413a99f4de2a5086" ]; then
  echo -e " env is stag "
-elif [ $2 == "prod-sg" ] && [ $1 == "arn:aws:elasticloadbalancing:ap-southeast-1:726150208279:loadbalancer/app/enquiries-api-alb-prod-sg/ae2fcc36b834255b" ]; then
- echo -e " env is prod-sg "
 else
  exit 1
 fi
