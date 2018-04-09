@@ -1,0 +1,6 @@
+---
+alb_name: newlaunch-api-id
+scheme: internet-facing
+healthcheck_path: /status/heartbeat
+target_group_name: "{{alb_name}}-{{env}}-default"
+ssl_certificate: arn:aws:acm:ap-southeast-1:726150208279:certificate/3f814d9a-2799-4976-8026-81810747b5b6

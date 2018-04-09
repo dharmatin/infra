@@ -1,0 +1,11 @@
+[buildkite-agent]
+buildkite-agent
+
+[web-frontend]
+web-frontend ansible_connection=local ansible_python_interpreter=python
+
+[alb]
+alb ansible_connection=local ansible_python_interpreter=python
+
+[ecr]
+ecr ansible_connection=local ansible_python_interpreter=python
