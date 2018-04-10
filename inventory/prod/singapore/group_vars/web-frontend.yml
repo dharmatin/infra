@@ -32,4 +32,4 @@ buildkite_build_ecr: latest
 
 alb_load_balancer: arn:aws:elasticloadbalancing:ap-southeast-1:726150208279:loadbalancer/app/newlaunch-api-id-alb-prod/729ed6a0f9fb529f #newlaunch-api-id-alb-stag
 hp_tg_port: 81
-sumologic_collector_endpoint: https://collectors.au.sumologic.com/receiver/v1/http/ZaVnC4dhaV3oV9kialNFiV4lyv6qUpUyCOjVtOxLf844YOV5g3F1zJzu9-hNRZkgstTyzEm9zXiheaj-Q91IwwSP1ZnijY24v_u4i-hiK3vh9nwbpHKLGw==
+sumologic_collector_endpoint: https://collectors.au.sumologic.com/receiver/v1/http/ZaVnC4dhaV1LV895_P2WVEC4w7rmspZx7GAu5zUUfApBkzEiTrsT5UBqMw8hVYQc6qwBHFcodEZNEz9rHNyTw3lX7sd7yp1p0rJLxNAeBNq7UdKjTewI_A==
