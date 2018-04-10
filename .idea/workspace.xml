@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="700bfd50-4fc5-4401-9912-b6855fa0f328" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change beforePath="$PROJECT_DIR$/cloudformation/frontend-alb.yml" afterPath="$PROJECT_DIR$/cloudformation/frontend-alb.yml" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -33,11 +34,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="alb-switch.sh" pinned="false" current-in-tab="true">
+      <file leaf-file-name="alb-switch.sh" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/roles/alb-switch-new/tasks/alb-switch.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="326">
-              <caret line="95" column="19" lean-forward="true" selection-start-line="95" selection-start-column="19" selection-end-line="95" selection-end-column="19" />
+            <state relative-caret-position="323">
+              <caret line="91" column="16" lean-forward="true" selection-start-line="91" selection-start-column="16" selection-end-line="91" selection-end-column="16" />
               <folding />
             </state>
           </provider>
@@ -53,11 +54,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="frontend-alb.yml" pinned="false" current-in-tab="false">
+      <file leaf-file-name="main.yml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/roles/alb-cleanup/tasks/main.yml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="30">
+              <caret line="2" column="28" lean-forward="false" selection-start-line="2" selection-start-column="28" selection-end-line="2" selection-end-column="28" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="frontend-alb.yml" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/cloudformation/frontend-alb.yml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
-              <caret line="433" column="46" lean-forward="true" selection-start-line="433" selection-start-column="46" selection-end-line="433" selection-end-column="46" />
+            <state relative-caret-position="334">
+              <caret line="584" column="0" lean-forward="true" selection-start-line="584" selection-start-column="0" selection-end-line="584" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -78,16 +89,6 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="45">
               <caret line="3" column="27" lean-forward="false" selection-start-line="3" selection-start-column="27" selection-end-line="3" selection-end-column="27" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="all.yml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/inventory/prod/singapore/group_vars/all.yml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="300">
-              <caret line="20" column="26" lean-forward="false" selection-start-line="20" selection-start-column="26" selection-end-line="20" selection-end-column="26" />
               <folding />
             </state>
           </provider>
@@ -151,13 +152,13 @@
         <option value="$PROJECT_DIR$/roles/frontend-alb/tasks/main.yml" />
         <option value="$PROJECT_DIR$/cloudformation/alb.yml" />
         <option value="$PROJECT_DIR$/inventory/stag/singapore/group_vars/alb.yml" />
-        <option value="$PROJECT_DIR$/cloudformation/frontend-alb.yml" />
         <option value="$PROJECT_DIR$/roles/alb-cleanup/tasks/alb-clean.sh" />
         <option value="$PROJECT_DIR$/.buildkite/pipeline.yml" />
         <option value="$PROJECT_DIR$/inventory/stag/singapore/group_vars/web-frontend.yml" />
         <option value="$PROJECT_DIR$/inventory/prod/singapore/group_vars/all.yml" />
         <option value="$PROJECT_DIR$/inventory/prod/singapore/group_vars/web-frontend.yml" />
         <option value="$PROJECT_DIR$/roles/alb-switch-new/tasks/alb-switch.sh" />
+        <option value="$PROJECT_DIR$/cloudformation/frontend-alb.yml" />
       </list>
     </option>
   </component>
@@ -196,7 +197,25 @@
             <path>
               <item name="infra" type="b2602c69:ProjectViewProjectNode" />
               <item name="infra" type="462c0819:PsiDirectoryNode" />
+              <item name="cloudformation" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="infra" type="b2602c69:ProjectViewProjectNode" />
+              <item name="infra" type="462c0819:PsiDirectoryNode" />
               <item name="roles" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="infra" type="b2602c69:ProjectViewProjectNode" />
+              <item name="infra" type="462c0819:PsiDirectoryNode" />
+              <item name="roles" type="462c0819:PsiDirectoryNode" />
+              <item name="alb-cleanup" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="infra" type="b2602c69:ProjectViewProjectNode" />
+              <item name="infra" type="462c0819:PsiDirectoryNode" />
+              <item name="roles" type="462c0819:PsiDirectoryNode" />
+              <item name="alb-cleanup" type="462c0819:PsiDirectoryNode" />
+              <item name="tasks" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="infra" type="b2602c69:ProjectViewProjectNode" />
@@ -597,13 +616,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/roles/alb-cleanup/tasks/main.yml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="13" lean-forward="true" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/roles/alb-cleanup/tasks/alb-clean.sh">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1005">
@@ -675,14 +687,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cloudformation/frontend-alb.yml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="433" column="46" lean-forward="true" selection-start-line="433" selection-start-column="46" selection-end-line="433" selection-end-column="46" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/inventory/prod/singapore/group_vars/web-frontend.yml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="270">
@@ -707,6 +711,14 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/roles/alb-switch-new/tasks/alb-switch.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="91" column="16" lean-forward="true" selection-start-line="91" selection-start-column="16" selection-end-line="91" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/roles/alb-switch-new/tasks/main.yml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="150">
@@ -715,10 +727,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/roles/alb-switch-new/tasks/alb-switch.sh">
+    <entry file="file://$PROJECT_DIR$/roles/alb-cleanup/tasks/main.yml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="326">
-          <caret line="95" column="19" lean-forward="true" selection-start-line="95" selection-start-column="19" selection-end-line="95" selection-end-column="19" />
+        <state relative-caret-position="30">
+          <caret line="2" column="28" lean-forward="false" selection-start-line="2" selection-start-column="28" selection-end-line="2" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cloudformation/frontend-alb.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="334">
+          <caret line="584" column="0" lean-forward="true" selection-start-line="584" selection-start-column="0" selection-end-line="584" selection-end-column="0" />
           <folding />
         </state>
       </provider>
