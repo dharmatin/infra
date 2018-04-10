@@ -1,3 +1,11 @@
 ---
-- name: Cleanup stack
-  command: sh roles/alb-switch-new/tasks/alb-switch.sh "{{ alb_load_balancer }}" "{{ env }}" "{{ aws_region}}" "{{ new_stack_name }}"
+ - name: Cleanup stack
+   command: sh roles/alb-switch-new/tasks/alb-switch.sh "{{ alb_load_balancer }}" "{{ env }}" "{{ aws_region}}" "{{ new_stack_name }}"
+
+ - name: Get the Subscription Filter name for Logs Group {{ logs_group_hp }} , remove and add the new subscription.
+   command: aws logs describe-subscription-filters --log-group-name {{ logs_group_hp }} --region {{ aws_region }} --query subscriptionFilters[].filterName --output text
+   register: subscription_filter
+   notify:
+     - delete subscription
+     - get lambda function arn
+     - add new subscription

@@ -120,6 +120,16 @@ Parameters:
   HpTargetGroupPort:
     Description: Hp listener port number
     Type: Number
+    # Sumo Logic Integration 
+  SumoLogicEndPoint:
+    Description: Sumo Logic Collector EndPoint
+    Type: String
+  SumoLogicLambdaFunctionName:
+    Description: Sumo Logic Collector Lambda Function Name
+    Type: String
+  SumoLogicDLQName:
+    Description: DLQ Name for SumoLogic Lambda Function
+    Type: String
 
 Mappings:
   AWSRegionArch2AMI:
@@ -572,4 +582,173 @@ Resources:
         - Name: NEW_RELIC_APP_NAME
           Value: !Join ['', [!Ref 'Project', '-', !Ref 'Env', '-' ,'HP']]
         Image: !Join ['', [!Ref 'ECRRegistry', '/', !Ref 'HpECRRepo', ':', !Ref 'HpBuildEcr']]
+
+  ####---- Lambda Function for SumoLogic Logs ----####
+
+  SumoCWLambdaPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName: !Ref SumoLogicLambdaFunctionName
+      Action: 'lambda:InvokeFunction'
+      Principal: !Join 
+        - .
+        - - logs
+          - !Ref 'AWS::Region'
+          - amazonaws.com
+      SourceAccount: !Ref 'AWS::AccountId'
+    DependsOn:
+      - SumoCWLogsLambda
+
+  SumoCWDeadLetterQueue:
+    Type: 'AWS::SQS::Queue'
+    Properties:
+      QueueName: !Ref SumoLogicDLQName
+
+  SumoCWLambdaExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: SQSCreateLogsRolePolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'sqs:DeleteMessage'
+                  - 'sqs:GetQueueUrl'
+                  - 'sqs:ListQueues'
+                  - 'sqs:ChangeMessageVisibility'
+                  - 'sqs:SendMessageBatch'
+                  - 'sqs:ReceiveMessage'
+                  - 'sqs:SendMessage'
+                  - 'sqs:GetQueueAttributes'
+                  - 'sqs:ListQueueTags'
+                  - 'sqs:ListDeadLetterSourceQueues'
+                  - 'sqs:DeleteMessageBatch'
+                  - 'sqs:PurgeQueue'
+                  - 'sqs:DeleteQueue'
+                  - 'sqs:CreateQueue'
+                  - 'sqs:ChangeMessageVisibilityBatch'
+                  - 'sqs:SetQueueAttributes'
+                Resource:
+                  - !GetAtt 
+                    - SumoCWDeadLetterQueue
+                    - Arn
+        - PolicyName: CloudWatchCreateLogsRolePolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                  - 'logs:DescribeLogStreams'
+                Resource:
+                  - 'arn:aws:logs:*:*:*'
+        - PolicyName: InvokeLambdaRolePolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'lambda:InvokeFunction'
+                Resource:
+                  - 'arn:aws:lambda:*:*:*'
+
+  SumoCWLogsLambda:
+    Type: 'AWS::Lambda::Function'
+    DependsOn:
+      - SumoCWLambdaExecutionRole
+      - SumoCWDeadLetterQueue
+    Properties:
+      FunctionName: !Ref SumoLogicLambdaFunctionName
+      Code:
+        S3Bucket: !Join 
+          - ''
+          - - appdevzipfiles-
+            - !Ref 'AWS::Region'
+        S3Key: dlqprocessor.zip
+      Role: !GetAtt 
+        - SumoCWLambdaExecutionRole
+        - Arn
+      Timeout: 300
+      DeadLetterConfig:
+        TargetArn: !GetAtt 
+          - SumoCWDeadLetterQueue
+          - Arn
+      Handler: cloudwatchlogs_lambda.handler
+      Runtime: nodejs4.3
+      MemorySize: 128
+      Environment:
+        Variables:
+          SUMO_ENDPOINT: !Ref SumoLogicEndPoint
+
+  SumoCWEventsInvokeLambdaPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName: !Ref SumoCWProcessDLQLambda
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt 
+        - SumoCWProcessDLQScheduleRule
+        - Arn
+
+  SumoCWProcessDLQScheduleRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Description: Events rule for Cron
+      ScheduleExpression: rate(5 minutes)
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt 
+            - SumoCWProcessDLQLambda
+            - Arn
+          Id: TargetFunctionV1
+
+  SumoCWProcessDLQLambda:
+    Type: 'AWS::Lambda::Function'
+    DependsOn:
+      - SumoCWLambdaExecutionRole
+      - SumoCWDeadLetterQueue
+    Properties:
+      Code:
+        S3Bucket: !Join 
+          - ''
+          - - appdevzipfiles-
+            - !Ref 'AWS::Region'
+        S3Key: dlqprocessor.zip
+      Role: !GetAtt 
+        - SumoCWLambdaExecutionRole
+        - Arn
+      Timeout: 300
+      Handler: DLQProcessor.handler
+      DeadLetterConfig:
+        TargetArn: !GetAtt 
+          - SumoCWDeadLetterQueue
+          - Arn
+      Runtime: nodejs4.3
+      MemorySize: 128
+      Environment:
+        Variables:
+          SUMO_ENDPOINT: !Ref SumoLogicEndPoint
+          TASK_QUEUE_URL: !Join
+            - ''
+            - - 'https://sqs.'
+              - !Ref 'AWS::Region'
+              - .amazonaws.com/
+              - !Ref 'AWS::AccountId'
+              - /SumoCWDeadLetterQueue
+          NUM_OF_WORKERS: 4
+          SUMO_CLIENT_HEADER: dlq-cwl-lambda
 

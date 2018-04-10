@@ -40,6 +40,9 @@
         AwslogsGroupHp: "{{logs_group_hp}}"
         AlbLoadBalancer: "{{alb_load_balancer}}"
         HpTargetGroupPort: "{{hp_tg_port}}"
+        SumoLogicEndPoint: "{{ sumologic_collector_endpoint }}"
+        SumoLogicLambdaFunctionName: "newlaunch-{{ env }}-{{ version }}-lambdafunction"
+        SumoLogicDLQName: "newlaunch-{{ env }}-{{ version }}-DLQ"
       tags:
         Project: "{{project}}"
         application: "{{application}}"
