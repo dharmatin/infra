@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="700bfd50-4fc5-4401-9912-b6855fa0f328" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/cloudformation/frontend-alb.yml" afterPath="$PROJECT_DIR$/cloudformation/frontend-alb.yml" />
-    </list>
+    <list default="true" id="700bfd50-4fc5-4401-9912-b6855fa0f328" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -48,7 +45,7 @@
         <entry file="file://$PROJECT_DIR$/roles/alb-switch-new/tasks/main.yml">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="150">
-              <caret line="10" column="14" lean-forward="true" selection-start-line="10" selection-start-column="14" selection-end-line="10" selection-end-column="14" />
+              <caret line="10" column="22" lean-forward="true" selection-start-line="10" selection-start-column="22" selection-end-line="10" selection-end-column="22" />
               <folding />
             </state>
           </provider>
@@ -159,6 +156,7 @@
         <option value="$PROJECT_DIR$/inventory/prod/singapore/group_vars/web-frontend.yml" />
         <option value="$PROJECT_DIR$/roles/alb-switch-new/tasks/alb-switch.sh" />
         <option value="$PROJECT_DIR$/cloudformation/frontend-alb.yml" />
+        <option value="$PROJECT_DIR$/roles/alb-switch-new/tasks/main.yml" />
       </list>
     </option>
   </component>
@@ -197,11 +195,6 @@
             <path>
               <item name="infra" type="b2602c69:ProjectViewProjectNode" />
               <item name="infra" type="462c0819:PsiDirectoryNode" />
-              <item name="cloudformation" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="infra" type="b2602c69:ProjectViewProjectNode" />
-              <item name="infra" type="462c0819:PsiDirectoryNode" />
               <item name="roles" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -222,6 +215,13 @@
               <item name="infra" type="462c0819:PsiDirectoryNode" />
               <item name="roles" type="462c0819:PsiDirectoryNode" />
               <item name="alb-switch-new" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="infra" type="b2602c69:ProjectViewProjectNode" />
+              <item name="infra" type="462c0819:PsiDirectoryNode" />
+              <item name="roles" type="462c0819:PsiDirectoryNode" />
+              <item name="alb-switch-new" type="462c0819:PsiDirectoryNode" />
+              <item name="handlers" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="infra" type="b2602c69:ProjectViewProjectNode" />
@@ -695,14 +695,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/roles/alb-switch-new/handlers/main.yml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/scripts/frontend-switch-elb.sh">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="135">
@@ -719,10 +711,18 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/roles/alb-switch-new/handlers/main.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/roles/alb-switch-new/tasks/main.yml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="150">
-          <caret line="10" column="14" lean-forward="true" selection-start-line="10" selection-start-column="14" selection-end-line="10" selection-end-column="14" />
+          <caret line="10" column="22" lean-forward="true" selection-start-line="10" selection-start-column="22" selection-end-line="10" selection-end-column="22" />
           <folding />
         </state>
       </provider>

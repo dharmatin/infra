@@ -64,6 +64,8 @@ list_env_stack ()
 }
 if [ $2 == "stag" ] && [ $1 == "arn:aws:elasticloadbalancing:ap-southeast-1:726150208279:loadbalancer/app/newlaunch-api-id-alb-stag/413a99f4de2a5086" ]; then
  echo -e " env is stag "
+elif [ $2 == "prod" ] && [ $1 == "arn:aws:elasticloadbalancing:ap-southeast-1:726150208279:loadbalancer/app/newlaunch-api-id-alb-prod/729ed6a0f9fb529f" ]; then
+ echo -e " env is prod "
 else
  exit 1
 fi
