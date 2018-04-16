@@ -1,0 +1,92 @@
+---
+- name: get target group arn
+  set_fact:
+    load_balancer_arn: "{{ alb_load_balancer }}"
+    application_stack: "{{ application }}"
+    env_stack: "{{ env }}"
+    new_stack_name: "{{ new_stack_name }}"
+
+- name: Describe listeners and Target Group
+  command: aws elbv2 describe-listeners --load-balancer-arn {{ load_balancer_arn }}   --region {{ aws_region }}
+  register: listeners_detail
+
+- name: Read instance describe result from ELB
+  set_fact:
+    listeners_detail_json: "{{ listeners_detail.stdout | from_json }}"
+
+- name: Get the 80 port listener
+  set_fact:
+    target_groupArn_80: "{{ item.DefaultActions[0].TargetGroupArn }}"
+    listenerarn_80: "{{ item.ListenerArn }}"
+  when: item.Port == 80
+  with_items:
+    - "{{ listeners_detail_json.Listeners }}"
+
+- name: Get the 443 port listener
+  set_fact:
+    target_groupArn_443: "{{ item.DefaultActions[0].TargetGroupArn }}"
+    listenerarn_443: "{{ item.ListenerArn }}"
+  when: item.Port == 443
+  with_items:
+    - "{{ listeners_detail_json.Listeners }}"
+
+- name: Describe Listener Health Status 80
+  command: aws elbv2 describe-target-health --target-group-arn {{ target_groupArn_80 }} --region {{ aws_region }}
+  register: target_health_80
+- name: Read instance Health
+  set_fact:
+    target_health_80_json: "{{ target_health_80.stdout | from_json }}"
+
+- name: Describe Listener Health Status 443
+  command: aws elbv2 describe-target-health --target-group-arn {{ target_groupArn_443 }} --region {{ aws_region }}
+  register: target_health_443
+
+- name: Read instance Health
+  set_fact:
+    target_health_443_json: "{{ target_health_443.stdout | from_json }}"
+
+- name: Check the targets health
+  fail: msg="Not all targets are healthy"
+  when: item.TargetHealth.State != "healthy"
+  with_items:
+    - "{{ target_health_80_json.TargetHealthDescriptions }}"
+    - "{{ target_health_443_json.TargetHealthDescriptions }}"
+  register: target_group_check_result
+  ignore_errors: true
+
+#####
+#- name: Check the targets health
+#  fail: msg="Not all targets are healthy"
+#  until: item.TargetHealth.State != "healthy"
+#  retries: 3
+#  delay: 5
+#  with_items:
+#    - "{{ target_health_80_json.TargetHealthDescriptions }}"
+#    - "{{ target_health_443_json.TargetHealthDescriptions }}"
+#  register: target_group_check_result
+#  ignore_errors: true
+#####
+
+- name: Fail the switch task if switch failed and delete the listener
+  fail: msg="switch failed "
+  when: target_group_check_result | failed
+
+- name: Get all stacks
+  command: aws cloudformation list-stacks --stack-status-filter CREATE_COMPLETE ROLLBACK_FAILED ROLLBACK_COMPLETE DELETE_FAILED UPDATE_COMPLETE UPDATE_ROLLBACK_FAILED UPDATE_ROLLBACK_COMPLETE --region {{aws_region}}
+  register: all_stack_output
+
+- name: Parse the all stack result to json
+  set_fact:
+    all_stacks_json: "{{all_stack_output.stdout | from_json }}"
+
+- name: Filter the target stacks
+  vars:
+    pattern: "^{{ application_stack }}-{{ env_stack }}-*"
+  set_fact:
+    target_stacks: "{{all_stacks_json.StackSummaries | selectattr('StackName', 'match', pattern) | map(attribute='StackName') | list }}"
+
+- name: Delete the filtered stacks
+  command: aws cloudformation delete-stack --stack-name {{item}} --region {{aws_region}}
+  with_items:
+    - "{{target_stacks}}"
+  when: target_stacks | length > 0 and item != new_stack_name and item != elb_name

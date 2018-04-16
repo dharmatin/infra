@@ -11,7 +11,7 @@ steps:
       queue: "api-enquiries-ipp:ci"
   - wait
   - label: ":arrows_clockwise: singapore-staging: switch stack"
-    command: "./scripts/frontend-switch-elb.sh"
+    command: "./scripts/frontend-switch.sh"
     branches: 'master'
     env:
       ENV: stag
@@ -22,7 +22,7 @@ steps:
       queue: "api-enquiries-ipp:ci"
   - wait
   - label: ":wastebasket: singapore-staging: cleanup stack"
-    command: "./scripts/frontend-cleanup-stack.sh"
+    command: "./scripts/frontend-cleanup.sh"
     branches: 'master'
     env:
       ENV: stag
@@ -49,7 +49,7 @@ steps:
   - block: ':pagerduty: switch-production'
   - wait
   - label: ":arrows_clockwise: singapore-production: switch stack"
-    command: "./scripts/frontend-switch-elb.sh"
+    command: "./scripts/frontend-switch.sh"
     branches: 'master'
     env:
       ENV: prod-sg
@@ -62,7 +62,7 @@ steps:
   - block: ':pagerduty: Clean-production'
   - wait
   - label: ":wastebasket: singapore-production: cleanup stack"
-    command: "./scripts/frontend-cleanup-stack.sh"
+    command: "./scripts/frontend-cleanup.sh"
     branches: 'master'
     env:
       ENV: prod-sg

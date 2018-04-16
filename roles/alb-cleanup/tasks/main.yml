@@ -1,3 +1,0 @@
----
-- name: Cleanup stack
-  command: sh roles/alb-cleanup/tasks/alb-clean.sh "{{ alb_load_balancer }}" "{{ env }}" "{{ aws_region}}" "{{ new_stack_name }}"

@@ -1,0 +1,75 @@
+---
+- name: get target group arn
+  set_fact:
+    load_balancer_arn: "{{ alb_load_balancer }}"
+
+- name: Describe listeners and Target Group
+  command: aws elbv2 describe-listeners --load-balancer-arn {{ load_balancer_arn }}   --region {{ aws_region }}
+  register: listeners_detail
+
+- name: Read instance describe result from ELB
+  set_fact:
+    listeners_detail_json: "{{ listeners_detail.stdout | from_json }}"
+- name: Get the 80 port listener
+  set_fact:
+    target_groupArn_80: "{{ item.DefaultActions[0].TargetGroupArn }}"
+    listenerarn_80: "{{ item.ListenerArn }}"
+  when: item.Port == 80
+  with_items:
+    - "{{ listeners_detail_json.Listeners }}"
+
+- name: Get the 81 port listener
+  set_fact:
+    target_groupArn_81: "{{ item.DefaultActions[0].TargetGroupArn }}"
+    listenerarn_81: "{{ item.ListenerArn  }}"
+  when: item.Port == 81
+  with_items:
+    - "{{ listeners_detail_json.Listeners }}"
+
+- name: Get the 443 port listener
+  set_fact:
+    target_groupArn_443: "{{ item.DefaultActions[0].TargetGroupArn }}"
+    listenerarn_443: "{{ item.ListenerArn }}"
+  when: item.Port == 443
+  with_items:
+    - "{{ listeners_detail_json.Listeners }}"
+
+- name: Describe Listener Health Status
+  command: aws elbv2 describe-target-health --target-group-arn {{ target_groupArn_81 }} --region {{ aws_region }}
+  register: target_health
+
+- name: Read instance Health
+  set_fact:
+    target_health_json: "{{ target_health.stdout | from_json }}"
+
+- name: Check the targets health
+  fail: msg="Not all targets are healthy"
+  when: item.TargetHealth.State != "healthy"
+  with_items:
+    - "{{ target_health_json.TargetHealthDescriptions }}"
+  register: target_group_check_result
+  ignore_errors: true
+
+- name: Fail the switch task if switch failed and delete the listener
+  fail: msg="switch failed and removed 81 port listener"
+  when: target_group_check_result | failed
+
+- name:  healthy check failed  so change listener port to something new for new deployment
+  command: aws elbv2 delete-listener --listener-arn {{ listenerarn_81 }} --region {{ aws_region }}
+  when: target_group_check_result | failed
+
+- name: Modify listener with new target_group
+  command: aws elbv2 modify-listener --listener-arn "{{ item }}"  --default-actions Type=forward,TargetGroupArn={{ target_groupArn_81 }} --region {{ aws_region }}
+  register: delete_target_health
+  with_items:
+    - "{{ listenerarn_443 }}"
+    - "{{ listenerarn_80 }}"
+  when: target_group_check_result | success
+
+- debug:
+    msg: "switch task works well and removed 81 port listener"
+  when: delete_target_health | success
+
+- name:  healthy check failed  so change listener port to something new for new deployment
+  command: aws elbv2 delete-listener --listener-arn {{ listenerarn_81 }} --region {{ aws_region }}
+  when: delete_target_health | success
