@@ -416,14 +416,14 @@ Resources:
     Type: AWS::CloudWatch::Alarm
     DependsOn: 'HPService'
     Properties:
-      AlarmDescription: 'Scale-up if MemoryUtilization  80% for 2 minutes ECSHpHigh '
-      AlarmName: !Join ['', ['ECSHpHigh-Mem-80%', '-', !Ref 'Env', '-', !Ref 'Version']]
+      AlarmDescription: 'Scale-up if MemoryUtilization  90% for 5 minutes ECSHpHigh '
+      AlarmName: !Join ['', ['ECSHpHigh-Mem-90%', '-', !Ref 'Env', '-', !Ref 'Version']]
       MetricName: 'MemoryUtilization'
       Namespace: 'AWS/ECS'
       Statistic: Average
       Period: '60'
-      EvaluationPeriods: '2'
-      Threshold: '80'
+      EvaluationPeriods: '5'
+      Threshold: '90'
       AlarmActions:
       - Ref: 'HpServiceScalingUpPolicy'
       Dimensions:
@@ -437,13 +437,13 @@ Resources:
     Type: AWS::CloudWatch::Alarm
     DependsOn: 'HPService'
     Properties:
-      AlarmDescription: 'Scale-Down if MemoryUtilization  25% for 5 minutes ECSHPMemLow '
+      AlarmDescription: 'Scale-Down if MemoryUtilization  25% for 15 minutes ECSHPMemLow '
       AlarmName: !Join ['', ['ECSHPMemLow-Mem-25%', '-', !Ref 'Env', '-', !Ref 'Version']]
       MetricName: 'MemoryUtilization'
       Namespace: 'AWS/ECS'
       Statistic: Average
       Period: '300'
-      EvaluationPeriods: '1'
+      EvaluationPeriods: '3'
       Threshold: '25'
       AlarmActions:
       - Ref: 'HpServiceScalingDownPolicy'
@@ -562,7 +562,7 @@ Resources:
       ContainerDefinitions:
       - Name: ECS-HP-TASK
         Memory: !Ref Hptaskmem
-        MemoryReservation: '256'
+        MemoryReservation: '128'
         Essential: true
         LogConfiguration:
           LogDriver: awslogs

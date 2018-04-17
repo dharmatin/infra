@@ -4,20 +4,20 @@ application: front-newlaunch-api
 ab: "{{ env }}"
 ecs_instance_type: t2.medium
 build: latest
-min_asg_size: 1
+min_asg_size: 2
 max_asg_size: 3
-desired_asg_capacity: 1
+desired_asg_capacity: 2
 
 instance_profile_role: EC2-Role-Instance-Profile
 
-low_pager_duty_arn:
-high_pager_duty_arn:
+low_pager_duty_arn: arn:aws:sns:ap-southeast-1:726150208279:Low-Priority-Newlaunch-ID-PagerDuty
+high_pager_duty_arn: arn:aws:sns:ap-southeast-1:726150208279:High-Priority-Newlaunch-ID-PagerDuty
 ssl_cert_arn:
 
 hp_ecr_repo: "{{ ecr_name }}"
-hp_service_count: "{{ min_asg_size + 1 }}"
-hp_task_mem: 1936
-hp_task_cpu: 900
+hp_service_count: "{{ min_asg_size }}"
+hp_task_mem: 3840
+hp_task_cpu: 1756
 logs_group_hp: awslogs-prod-newlaunch-api-id
 
 resource_bucket_name: enquiries.api.iproperty.com-prod
