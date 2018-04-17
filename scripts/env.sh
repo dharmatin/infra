@@ -6,7 +6,7 @@ echo '--- :house_with_garden: Check the environment here'
 
 export PROD_AWS_ACCOUNT_ID=726150208279
 export BUILD_NUMBER=${BUILDKITE_BUILD_NUMBER:=snapshot}
-export AB=${ENV}
+export AB=${ENV_INT}
 export APPLICATION="front-newlaunch-api"
 export ENVIRONMENT=${ENV}
 export ENVIRONMENT_INT=${ENV_INT}
