@@ -9,6 +9,8 @@ steps:
       BUILDKITE_BUILD_ECR: "${BUILDKITE_BUILD_ECR}"
     agents:
       queue: "api-enquiries-ipp:ci"
+    concurrency: 1
+    concurrency_group: 'Frontend-stack/deploy'
   - wait
   - label: ":arrows_clockwise: singapore-staging: switch stack"
     command: "./scripts/frontend-switch.sh"

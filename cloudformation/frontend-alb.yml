@@ -580,5 +580,5 @@ Resources:
         - Name: NEW_RELIC_LICENSE_KEY
           Value: !Sub '${NewRelicLicenseKey}'
         - Name: NEW_RELIC_APP_NAME
-          Value: !Join ['', [!Ref 'Project', '-', !Ref 'Env', '-' ,'HP']]
+          Value: !Join ['', [!Ref 'Project', '-', !Ref 'Env', '-' ,'PPP']]
         Image: !Join ['', [!Ref 'ECRRegistry', '/', !Ref 'HpECRRepo', ':', !Ref 'HpBuildEcr']]
