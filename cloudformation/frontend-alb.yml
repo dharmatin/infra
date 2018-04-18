@@ -134,11 +134,11 @@ Parameters:
 Mappings:
   AWSRegionArch2AMI:
     ap-southeast-1:
-      HVM64: ami-acbcefd0
+      HVM64: ami-846144f8
     ap-northeast-1:
-      HVM64: ami-5add893c
+      HVM64: ami-a99d8ad5
     ap-southeast-2:
-      HVM64: ami-4cc5072e
+      HVM64: ami-efda148d
 
 Resources:
   ECSCluster:
