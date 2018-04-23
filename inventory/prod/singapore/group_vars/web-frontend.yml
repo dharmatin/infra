@@ -5,7 +5,7 @@ ab: "{{ env }}"
 ecs_instance_type: t2.medium
 build: latest
 min_asg_size: 2
-max_asg_size: 3
+max_asg_size: 4
 desired_asg_capacity: 2
 
 instance_profile_role: EC2-Role-Instance-Profile
