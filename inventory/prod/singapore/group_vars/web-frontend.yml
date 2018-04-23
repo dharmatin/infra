@@ -15,7 +15,7 @@ high_pager_duty_arn: arn:aws:sns:ap-southeast-1:726150208279:High-Priority-Newla
 ssl_cert_arn:
 
 hp_ecr_repo: "{{ ecr_name }}"
-hp_service_count: "{{ min_asg_size + 1 }}"
+hp_service_count: "{{ min_asg_size }}"
 hp_task_mem: 3840
 hp_task_cpu: 1756
 logs_group_hp: awslogs-prod-newlaunch-api-id
