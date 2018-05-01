@@ -1,0 +1,6 @@
+---
+- hosts: alb
+  connection: local
+  gather_facts: false
+  roles:
+    - cloudwatch

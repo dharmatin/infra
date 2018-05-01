@@ -1,0 +1,98 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Install the frontend stack for all environments
+Parameters:
+  StackName:
+    Description: Main ECR Registry
+    Type: String
+  ClusterNAme:
+    Description: Homepage ECR Repo
+    Type: String
+  ServiceName:
+    Description: Homepage image build number
+    Type: String
+Resources:
+  Dashboard:
+    Type: 'AWS::CloudWatch::Dashboard'
+    Properties:
+      DashboardName: ECS-Cluster-Service-Stat-1
+      DashboardBody: >-
+                    {
+                    	"widgets": [{
+                    		"type": "metric",
+                    		"x": 0,
+                    		"y": 0,
+                    		"width": 12,
+                    		"height": 6,
+                    		"styles": "undefined",
+                    		"properties": {
+                    			"view": "timeSeries",
+                    			"stacked": false,
+                    			"metrics": [
+                    				["AWS/ECS",
+                    					"CPUUtilization", "ClusterName",
+                    					{ "Ref": "ClusterNAme" }
+                    				]
+                    			],
+                    			"region": "ap-southeast-1",
+                    			"title": "Ecs-CPUUtilization"
+                    		}
+                    	}, {
+                    		"type": "metric",
+                    		"x": 12,
+                    		"y": 0,
+                    		"width": 12,
+                    		"height": 6,
+                    		"styles": "undefined",
+                    		"properties": {
+                    			"view": "timeSeries",
+                    			"stacked": false,
+                    			"metrics": [
+                    				["AWS/ECS", "MemoryUtilization", "ClusterName",
+                    					{ "Ref": "ClusterNAme" }
+                    				]
+                    			],
+                    			"region": "ap-southeast-1",
+                    			"title": "Ecs-MemoryUtilization"
+                    		}
+                    	}, {
+                    		"type": "metric",
+                    		"x": 0,
+                    		"y": 6,
+                    		"width": 12,
+                    		"height": 6,
+                    		"styles": "undefined",
+                    		"properties": {
+                    			"view": "timeSeries",
+                    			"stacked": false,
+                    			"metrics": [
+                    				["AWS/ECS", "CPUUtilization", "ServiceName",
+                    					"front-newlaunch-api-stag-143-64-HPService-1837IL8QT9MNB",
+                    					"ClusterName",
+                    					{ "Ref": "ClusterNAme" }
+                    				]
+                    			],
+                    			"region": "ap-southeast-1",
+                    			"title": "Serive-CPUUtilization"
+                    		}
+                    	}, {
+                    		"type": "metric",
+                    		"x": 12,
+                    		"y": 6,
+                    		"width": 12,
+                    		"height": 6,
+                    		"styles": "undefined",
+                    		"properties": {
+                    			"view": "timeSeries",
+                    			"stacked": false,
+                    			"metrics": [
+                    				["AWS/ECS", "MemoryUtilization", "ServiceName",
+                    					"front-newlaunch-api-stag-143-64-HPService-1837IL8QT9MNB",
+                    					"ClusterName",
+                    					{ "Ref": "ClusterNAme" }
+                    				]
+                    			],
+                    			"region": "ap-southeast-1",
+                    			"title": "Service-MemoryUtilization"
+                    		}
+                    	}]
+                    }

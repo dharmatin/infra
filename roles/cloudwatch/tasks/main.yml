@@ -1,0 +1,18 @@
+---
+  - name: Cloudwatch dashbaord
+    cloudformation:
+      stack_name: "Cloudwatch-new1"
+      state: present
+      region: "{{aws_region}}"
+      template: "cloudformation/cloudwatch-dashbaord.yml"
+      template_parameters:
+        StackName: "test"
+        ClusterNAme: "front-newlaunch-api-stag-143-64-ECSCluster-1ASCH5PBA7ZLW"
+        ServiceName: "front-newlaunch-api-stag-143-64-HPService-1837IL8QT9MNB"
+      tags:
+        Project: "{{project}}"
+        application: "{{application}}"
+        lob: "id"
+        env: "{{env}}"
+        stack_name: "{{alb_name}}-alb-{{env}}"
+        Business Unit: "{{business_unit}}"
