@@ -295,7 +295,8 @@ Resources:
           #!/bin/bash -ex
           /bin/echo -e '######--------------------------Install software----------------------###### \n'
           /usr/bin/yum update -y
-          /usr/bin/yum install -y curl wget aws-cfn-bootstrap
+          /usr/bin/yum install -y curl wget aws-cfn-bootstrap  amazon-ssm-agent -y
+          /sbin/start amazon-ssm-agent
           /usr/bin/easy_install awscli
           /opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --configsets InstallAndRun --resource ContainerInstances
           /bin/echo -e '######-----------------Configure Hostname on EC2 Host-----------------###### \n'
@@ -369,6 +370,65 @@ Resources:
           Principal:
             Service: 'ecs.amazonaws.com'
           Action: 'sts:AssumeRole'
+
+  SumoCWLambdaExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: SQSCreateLogsRolePolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'sqs:DeleteMessage'
+                  - 'sqs:GetQueueUrl'
+                  - 'sqs:ListQueues'
+                  - 'sqs:ChangeMessageVisibility'
+                  - 'sqs:SendMessageBatch'
+                  - 'sqs:ReceiveMessage'
+                  - 'sqs:SendMessage'
+                  - 'sqs:GetQueueAttributes'
+                  - 'sqs:ListQueueTags'
+                  - 'sqs:ListDeadLetterSourceQueues'
+                  - 'sqs:DeleteMessageBatch'
+                  - 'sqs:CreateQueue'
+                  - 'sqs:ChangeMessageVisibilityBatch'
+                  - 'sqs:SetQueueAttributes'
+                Resource:
+                  - 'arn:aws:sqs:*:*:*'
+                  - 'arn:aws:sns:*:*:*'
+        - PolicyName: CloudWatchCreateLogsRolePolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                  - 'logs:DescribeLogStreams'
+                Resource:
+                  - 'arn:aws:logs:*:*:*'
+        - PolicyName: InvokeLambdaRolePolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'lambda:InvokeFunction'
+                Resource:
+                  - 'arn:aws:lambda:*:*:*'
 
   HpServiceScalingTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
