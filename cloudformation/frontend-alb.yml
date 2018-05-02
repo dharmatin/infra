@@ -33,10 +33,8 @@ Parameters:
       - m3.large
       - m4.large
       - m4.xlarge
-      - m4.2xlarge
       - c4.large
       - c4.xlarge
-      - c4.2xlarge
   KeyNamessh:
     Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
     Type: 'AWS::EC2::KeyPair::KeyName'
@@ -74,12 +72,6 @@ Parameters:
   SubnetID:
     Description: Public subnets
     Type: CommaDelimitedList
-  SumoLogicAccessId:
-    Description: Sumo Logic access id
-    Type: String
-  SumoLogicAccessKey:
-    Description: Sumo Logic access key
-    Type: String
   VPC:
     Description: Choose which VPC we should be deploying the stack to
     Type: 'AWS::EC2::VPC::Id'
@@ -120,16 +112,6 @@ Parameters:
   HpTargetGroupPort:
     Description: Hp listener port number
     Type: Number
-    # Sumo Logic Integration
-  SumoLogicEndPoint:
-    Description: Sumo Logic Collector EndPoint
-    Type: String
-  SumoLogicLambdaFunctionName:
-    Description: Sumo Logic Collector Lambda Function Name
-    Type: String
-  SumoLogicDLQName:
-    Description: DLQ Name for SumoLogic Lambda Function
-    Type: String
 
 Mappings:
   AWSRegionArch2AMI:
@@ -293,42 +275,46 @@ Resources:
       UserData:
         "Fn::Base64": !Sub |
           #!/bin/bash -ex
-          /bin/echo -e '######--------------------------Install software----------------------###### \n'
-          /usr/bin/yum update -y
-          /usr/bin/yum install -y curl wget aws-cfn-bootstrap  amazon-ssm-agent -y
-          /sbin/start amazon-ssm-agent
-          /usr/bin/easy_install awscli
-          /opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --configsets InstallAndRun --resource ContainerInstances
-          /bin/echo -e '######-----------------Configure Hostname on EC2 Host-----------------###### \n'
+          /bin/echo -e '####  -----         Environment variable is ${Env}        ------------###### \n'
+          function error_exit{
+            /bin/echo $1
+            /opt/aws/bin/cfn-signal -e 1 --stack ${AWS::StackName} --resource ECSAutoScalingGroup --region ${AWS::Region}
+            exit 1
+          }
+          function install_software {
+            /usr/bin/yum update -y
+            /usr/bin/yum install -y curl wget aws-cfn-bootstrap
+            /usr/bin/easy_install awscli
+          }
           function configure_hosts {
             recordName=${RecordName}
-            project=${Project}
             instance_ip=$(/usr/bin/curl -q http://169.254.169.254/latest/meta-data/local-ipv4)
             domain=$(/bin/awk '/^search/ { print $2 }' /etc/resolv.conf)
             ipend=`/bin/echo $instance_ip | /bin/sed 's/\./\-/g'`
             /bin/echo "$instance_ip $recordName.$domain $recordName-$ipend">> /etc/hosts
             /bin/hostname $recordName-$ipend
           }
-          configure_hosts
-          /bin/echo -e '\n\n####  -----         Environment variable is ${Env}        ------------###### \n'
-          /usr/local/bin/aws s3 cp s3://${ResourceBucketName}/newrelic/${NewRelicRPM} /tmp/${NewRelicRPM} --region ${AWS::Region}
-          /bin/rpm -vhi /tmp/${NewRelicRPM}
-          /usr/sbin/usermod  -a -G docker newrelic
-          /usr/sbin/nrsysmond-config --set license_key=${NewRelicLicenseKey}
-          /bin/echo hostname=$(/bin/hostname ) >> /etc/newrelic/nrsysmond.cfg
-          /etc/init.d/newrelic-sysmond start
-          /bin/echo -e '#####------------- Final config steps for logging and ecs cluster---- ###### \n\n'
-          /bin/sed -i 's/1024:4096/1024:4096 --log-opt max-size=100m  --log-opt max-file=5/g' /etc/sysconfig/docker
-          /bin/echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config
-          /bin/echo ECS_LOGLEVEL=error  >> /etc/ecs/ecs.config
-          /etc/init.d/docker restart
-          /bin/echo -e '#### ------------  Testing of New relic agent info       ----------   ###### \n'
-          /bin/ps aux | grep newrelic
-          /bin/rm -f /tmp/${NewRelicRPM}
-          /bin/echo -e '#### -------------------------- Service autostart-------------------  ####### \n'
-          /sbin/chkconfig newrelic-sysmond on
-          /bin/echo -e '######--------------------------Signal success------------------------###### \n\n '
-          /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource ECSAutoScalingGroup --region ${AWS::Region}
+          install_software
+          configure_hosts || error_exit "Fail to configure Hostname on EC2 Host"
+          /opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --configsets InstallAndRun --resource ContainerInstances
+          function configure_newrelic {
+            /usr/local/bin/aws s3 cp s3://${ResourceBucketName}/newrelic/${NewRelicRPM} /tmp/${NewRelicRPM} --region ${AWS::Region}
+            /bin/rpm -vhi /tmp/${NewRelicRPM}
+            /usr/sbin/usermod -a -G docker newrelic
+            /usr/sbin/nrsysmond-config --set license_key=${NewRelicLicenseKey}
+            /bin/echo hostname=$(/bin/hostname) >> /etc/newrelic/nrsysmond.cfg
+            /etc/init.d/newrelic-sysmond start
+            /bin/ps aux | grep newrelic
+            /sbin/chkconfig newrelic-sysmond on
+            /bin/rm -f /tmp/${NewRelicRPM}
+          }
+          function configure_ecs {
+            /bin/echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config
+            /bin/echo ECS_LOGLEVEL=error >> /etc/ecs/ecs.config
+          }
+          configure_newrelic || error_exit "Fail to install NewRelic agent on EC2 Host"
+          configure_ecs || error_exit "Fail to Final config steps for logging and ecs cluster"
+          /opt/aws/bin/cfn-signal -e 0 --stack ${AWS::StackName} --resource ECSAutoScalingGroup --region ${AWS::Region}
 
   AutoscalingRole:
     DependsOn: 'ECSAutoScalingGroup'
@@ -370,65 +356,6 @@ Resources:
           Principal:
             Service: 'ecs.amazonaws.com'
           Action: 'sts:AssumeRole'
-
-  SumoCWLambdaExecutionRole:
-    Type: 'AWS::IAM::Role'
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - lambda.amazonaws.com
-            Action:
-              - 'sts:AssumeRole'
-      Path: /
-      Policies:
-        - PolicyName: SQSCreateLogsRolePolicy
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action:
-                  - 'sqs:DeleteMessage'
-                  - 'sqs:GetQueueUrl'
-                  - 'sqs:ListQueues'
-                  - 'sqs:ChangeMessageVisibility'
-                  - 'sqs:SendMessageBatch'
-                  - 'sqs:ReceiveMessage'
-                  - 'sqs:SendMessage'
-                  - 'sqs:GetQueueAttributes'
-                  - 'sqs:ListQueueTags'
-                  - 'sqs:ListDeadLetterSourceQueues'
-                  - 'sqs:DeleteMessageBatch'
-                  - 'sqs:CreateQueue'
-                  - 'sqs:ChangeMessageVisibilityBatch'
-                  - 'sqs:SetQueueAttributes'
-                Resource:
-                  - 'arn:aws:sqs:*:*:*'
-                  - 'arn:aws:sns:*:*:*'
-        - PolicyName: CloudWatchCreateLogsRolePolicy
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action:
-                  - 'logs:CreateLogGroup'
-                  - 'logs:CreateLogStream'
-                  - 'logs:PutLogEvents'
-                  - 'logs:DescribeLogStreams'
-                Resource:
-                  - 'arn:aws:logs:*:*:*'
-        - PolicyName: InvokeLambdaRolePolicy
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action:
-                  - 'lambda:InvokeFunction'
-                Resource:
-                  - 'arn:aws:lambda:*:*:*'
 
   HpServiceScalingTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
@@ -525,26 +452,6 @@ Resources:
         ToPort: '22'
         CidrIp: !Ref 'VpcCidr'
         Description: 'SSH-Port'
-      - IpProtocol: tcp
-        FromPort: '9000'
-        ToPort: '9000'
-        CidrIp: !Ref 'VpcCidr'
-        Description: 'Application-Port'
-      - IpProtocol: tcp
-        FromPort: '80'
-        ToPort: '80'
-        CidrIp: !Ref 'VpcCidr'
-        Description: 'HTTP-ELB-Port'
-      - IpProtocol: tcp
-        FromPort: '443'
-        ToPort: '443'
-        CidrIp: !Ref 'VpcCidr'
-        Description: 'HTTPS-ELB-Port'
-      - IpProtocol: tcp
-        FromPort: !Ref 'HpTargetGroupPort'
-        ToPort: !Ref 'HpTargetGroupPort'
-        CidrIp: !Ref 'VpcCidr'
-        Description: 'HTTP-ALB-Port'
       - IpProtocol: tcp
         FromPort: '32768'
         ToPort: '42000'
