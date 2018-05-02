@@ -25,8 +25,6 @@
         ResourceBucketName: "{{resource_bucket_name}}"
         SSLCertificateARN: "{{ssl_cert_arn}}"
         SubnetID: "{{private_subnets}}"
-        SumoLogicAccessId: "{{sumo_logic_access_id}}"
-        SumoLogicAccessKey: "{{sumo_logic_access_key}}"
         VPC: "{{aws_vpc_id}}"
         VpcCidr: "{{vpc_cidr}}"
         VpcDns: "{{vpc_dns}}"
