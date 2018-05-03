@@ -275,7 +275,7 @@ Resources:
       UserData:
         "Fn::Base64": !Sub |
           #!/bin/bash -ex
-          /bin/echo -e '####  -----         Environment variable is ${Env}        ------------###### \n'
+          /bin/echo -e '####  -----    Environment variable is ${Env}        ------------###### \n'
           function error_exit{
             /bin/echo $1
             /opt/aws/bin/cfn-signal -e 1 --stack ${AWS::StackName} --resource ECSAutoScalingGroup --region ${AWS::Region}
@@ -283,8 +283,13 @@ Resources:
           }
           function install_software {
             /usr/bin/yum update -y
-            /usr/bin/yum install -y curl wget aws-cfn-bootstrap
+            /usr/bin/yum install -y curl wget aws-cfn-bootstrap  amazon-ssm-agent -y
+            /sbin/start amazon-ssm-agent
             /usr/bin/easy_install awscli
+          }
+          function configure_ecs {
+            /bin/echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config
+            /bin/echo ECS_LOGLEVEL=error >> /etc/ecs/ecs.config
           }
           function configure_hosts {
             recordName=${RecordName}
@@ -294,9 +299,6 @@ Resources:
             /bin/echo "$instance_ip $recordName.$domain $recordName-$ipend">> /etc/hosts
             /bin/hostname $recordName-$ipend
           }
-          install_software
-          configure_hosts || error_exit "Fail to configure Hostname on EC2 Host"
-          /opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --configsets InstallAndRun --resource ContainerInstances
           function configure_newrelic {
             /usr/local/bin/aws s3 cp s3://${ResourceBucketName}/newrelic/${NewRelicRPM} /tmp/${NewRelicRPM} --region ${AWS::Region}
             /bin/rpm -vhi /tmp/${NewRelicRPM}
@@ -304,17 +306,15 @@ Resources:
             /usr/sbin/nrsysmond-config --set license_key=${NewRelicLicenseKey}
             /bin/echo hostname=$(/bin/hostname) >> /etc/newrelic/nrsysmond.cfg
             /etc/init.d/newrelic-sysmond start
-            /bin/ps aux | grep newrelic
             /sbin/chkconfig newrelic-sysmond on
             /bin/rm -f /tmp/${NewRelicRPM}
           }
-          function configure_ecs {
-            /bin/echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config
-            /bin/echo ECS_LOGLEVEL=error >> /etc/ecs/ecs.config
-          }
-          configure_newrelic || error_exit "Fail to install NewRelic agent on EC2 Host"
-          configure_ecs || error_exit "Fail to Final config steps for logging and ecs cluster"
-          /opt/aws/bin/cfn-signal -e 0 --stack ${AWS::StackName} --resource ECSAutoScalingGroup --region ${AWS::Region}
+          /opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --configsets InstallAndRun --resource ContainerInstances
+          install_software
+          configure_hosts        || error_exit "Fail to configure Hostname on EC2 Host"
+          configure_newrelic     || error_exit "Fail to install NewRelic agent on EC2 Host"
+          configure_ecs          || error_exit "Fail to Final config steps for logging and ecs cluster"
+          /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource ECSAutoScalingGroup --region ${AWS::Region}
 
   AutoscalingRole:
     DependsOn: 'ECSAutoScalingGroup'
