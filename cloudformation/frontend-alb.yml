@@ -125,6 +125,196 @@ Mappings:
 Resources:
   ECSCluster:
     Type: AWS::ECS::Cluster
+  NotificationTopic:
+    Type: 'AWS::SNS::Topic'
+    Properties:
+      Subscription:
+        - Endpoint: !GetAtt
+            - LifecycleHandlerFunction
+            - Arn
+          Protocol: lambda
+    DependsOn: LifecycleHandlerFunction
+  InstanceTerminatingHook:
+    Type: 'AWS::AutoScaling::LifecycleHook'
+    Properties:
+      AutoScalingGroupName: !Ref ECSAutoScalingGroup
+      DefaultResult: ABANDON
+      HeartbeatTimeout: '600'
+      LifecycleTransition: 'autoscaling:EC2_INSTANCE_TERMINATING'
+      NotificationTargetARN: !Ref NotificationTopic
+      RoleARN: !GetAtt
+        - AutoscalingNotificationRole
+        - Arn
+    DependsOn: NotificationTopic
+  AutoscalingNotificationRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - autoscaling.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AutoScalingNotificationAccessRole'
+  LambdaExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      Policies:
+        - PolicyName: lambda-inline
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'autoscaling:CompleteLifecycleAction'
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                  - 'ec2:DescribeInstances'
+                  - 'ec2:DescribeInstanceAttribute'
+                  - 'ec2:DescribeInstanceStatus'
+                  - 'ec2:DescribeHosts'
+                  - 'ecs:ListContainerInstances'
+                  - 'ecs:SubmitContainerStateChange'
+                  - 'ecs:SubmitTaskStateChange'
+                  - 'ecs:DescribeContainerInstances'
+                  - 'ecs:UpdateContainerInstancesState'
+                  - 'ecs:ListTasks'
+                  - 'ecs:DescribeTasks'
+                  - 'sns:Publish'
+                  - 'sns:ListSubscriptions'
+                Resource: '*'
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AutoScalingNotificationAccessRole'
+  LambdaInvokePermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName: !Ref LifecycleHandlerFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: sns.amazonaws.com
+      SourceArn: !Ref NotificationTopic
+  LifecycleHandlerFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Environment:
+        Variables:
+          ECS_CLUSTER: !Ref ECSCluster
+      Code:
+        ZipFile: !Join
+          - ''
+          - - |
+              import boto3
+              from os import environ
+              import json
+              import logging
+              import time
+
+              logging.basicConfig()
+              logger = logging.getLogger()
+              logger.setLevel(logging.INFO)
+
+              ecsClient = boto3.client('ecs')
+              asgClient = boto3.client('autoscaling')
+              snsClient = boto3.client('sns')
+
+              ECS_CLUSTER = environ.get('ECS_CLUSTER')
+
+              def publishToSNS(message, topicARN):
+                  logger.info("Publish to SNS topic %s", topicARN)
+                  snsResponse = snsClient.publish(
+                      TopicArn=topicARN,
+                      Message=json.dumps(message),
+                      Subject='Publishing SNS message to invoke lambda again..'
+                  )
+                  return "published"
+
+
+              def getContainerInstanceFromEc2Instance(ec2InstanceId):
+                  instance_list = ecsClient.list_container_instances(cluster=ECS_CLUSTER)
+                  instances = ecsClient.describe_container_instances(cluster=ECS_CLUSTER,
+                                                               containerInstances=instance_list['containerInstanceArns'])
+
+                  for instance in instances['containerInstances']:
+                      if instance['ec2InstanceId'] == ec2InstanceId:
+                          return instance
+
+                  return None
+
+
+              def drainContainerInstance(containerInstance):
+                  # Check if the instance state is set to DRAINING.
+                  # If not, set it, so the ECS Cluster will handle de-registering instance, draining any running tasks and moving them elsewhere
+                  containerStatus = containerInstance['status']
+                  if containerStatus == 'DRAINING':
+                      logger.info("Container Instance ID %s on EC2 instance %s is already draining tasks.",
+                                  containerInstance['containerInstanceArn'],
+                                  containerInstance['ec2InstanceId'])
+                  else:
+                      # Make ECS API call to set the container status to DRAINING
+                      logger.info("Container Instance ID %s on EC2 instance %s is currently %s, updating to DRAINING.",
+                                  containerInstance['containerInstanceArn'],
+                                  containerInstance['ec2InstanceId'],
+                                  containerInstance['status'])
+                      ecsClient.update_container_instances_state(cluster=ECS_CLUSTER,
+                                                                 containerInstances=[ containerInstance['containerInstanceArn'] ],
+                                                                 status='DRAINING')
+
+
+              def countRunningTasks(containerInstance):
+                  logger.info("Container Instance ID %s is currently running %s tasks.",
+                              containerInstance['containerInstanceArn'],
+                              containerInstance['runningTasksCount'])
+
+                  return containerInstance['runningTasksCount']
+
+
+              def handler(event, context):
+                  topicArn = event['Records'][0]['Sns']['TopicArn']
+                  line = event['Records'][0]['Sns']['Message']
+                  message = json.loads(line)
+
+                  ec2InstanceId = message['EC2InstanceId']
+                  lifecycleHookName = message['LifecycleHookName']
+                  asgGroupName = message['AutoScalingGroupName']
+
+                  runningTasks = 0
+                  containerInstance = getContainerInstanceFromEc2Instance(ec2InstanceId)
+                  if containerInstance is not None:
+                      drainContainerInstance(containerInstance)
+                      runningTasks = countRunningTasks(containerInstance)
+
+                  if runningTasks > 0:
+                      logger.info('Waiting 15 seconds to republish message')
+                      time.sleep(15)
+                      publishToSNS(message, topicArn)
+                  else:
+                      logger.info('Completing lifecycle action, machine will now terminate cleanly')
+                      asgClient.complete_lifecycle_action(
+                          LifecycleHookName=lifecycleHookName,
+                          AutoScalingGroupName=asgGroupName,
+                          LifecycleActionResult='CONTINUE',
+                          InstanceId=ec2InstanceId)
+
+      Handler: index.handler
+      Role: !GetAtt
+        - LambdaExecutionRole
+        - Arn
+      Runtime: python3.6
+      Timeout: 10
+
   ECSScaleUpPolicy:
     Type: 'AWS::AutoScaling::ScalingPolicy'
     Properties:
@@ -343,7 +533,6 @@ Resources:
             - cloudformation:SignalResource
             Resource:
             - '*'
-
   ECSServiceRole:
     Type: 'AWS::IAM::Role'
     Properties:
@@ -356,7 +545,6 @@ Resources:
           Principal:
             Service: 'ecs.amazonaws.com'
           Action: 'sts:AssumeRole'
-
   HpServiceScalingTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
     DependsOn: 'AutoscalingRole'
