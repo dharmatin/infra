@@ -36,8 +36,8 @@
       <file leaf-file-name="frontend-alb.yml" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/cloudformation/frontend-alb.yml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-3411">
-              <caret line="289" column="34" lean-forward="true" selection-start-line="289" selection-start-column="34" selection-end-line="289" selection-end-column="34" />
+            <state relative-caret-position="315">
+              <caret line="651" column="32" lean-forward="true" selection-start-line="651" selection-start-column="32" selection-end-line="651" selection-end-column="32" />
               <folding />
             </state>
           </provider>
@@ -107,8 +107,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>HP</find>
-      <find>join</find>
       <find>grep</find>
       <find>api-enquiry</find>
       <find>3002</find>
@@ -129,7 +127,6 @@
       <find>ecsscal</find>
       <find>topic</find>
       <find>que</find>
-      <find>lambda</find>
       <find>SumoLogicDLQName</find>
       <find>SumoLogicLambdaFunctionName</find>
       <find>SumoLogicEndPoint</find>
@@ -137,6 +134,9 @@
       <find>SumoLogicAccessId</find>
       <find>SumoLogicAccessKey</find>
       <find>sumo</find>
+      <find>lambda</find>
+      <find>ECSCluster</find>
+      <find>ssh</find>
     </findStrings>
     <replaceStrings>
       <replace>PPP</replace>
@@ -359,7 +359,7 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32905984" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18660969" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18660969" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14520743" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -656,8 +656,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/cloudformation/frontend-alb.yml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-3411">
-          <caret line="289" column="34" lean-forward="true" selection-start-line="289" selection-start-column="34" selection-end-line="289" selection-end-column="34" />
+        <state relative-caret-position="315">
+          <caret line="651" column="32" lean-forward="true" selection-start-line="651" selection-start-column="32" selection-end-line="651" selection-end-column="32" />
           <folding />
         </state>
       </provider>
