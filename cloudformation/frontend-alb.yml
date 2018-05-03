@@ -757,7 +757,7 @@ Resources:
           Value: !Join ['', [!Ref 'Project', '-', !Ref 'Env', '-' ,'PPP']]
         Image: !Join ['', [!Ref 'ECRRegistry', '/', !Ref 'HpECRRepo', ':', !Ref 'HpBuildEcr']]
 Outputs:
-  Newluanch-PPP-Id-lambda:
+  Newluanchlambda:
     Value: !GetAtt LifecycleHandlerFunction.Arn
     Description: Lambda Function Arn
   EcsClusterName:
