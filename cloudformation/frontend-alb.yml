@@ -88,6 +88,7 @@ Parameters:
   Env:
     Description: Environment name
     Type: String
+    AllowedValues: [prod, dev, stag]
   Version:
     Description: Version string to display in header
     Type: String
@@ -112,6 +113,8 @@ Parameters:
   HpTargetGroupPort:
     Description: Hp listener port number
     Type: Number
+Conditions:
+  CreateProdResources: !Not [!Equals [!Ref Env, "prod"]]
 
 Mappings:
   AWSRegionArch2AMI:
@@ -365,7 +368,24 @@ Resources:
       Threshold: 20
       AlarmActions:
       - !Ref ECSScaleDownPolicy
-
+  ScheduledActionUp:
+    Condition: CreateProdResources
+    Type: "AWS::AutoScaling::ScheduledAction"
+    Properties:
+      AutoScalingGroupName:
+        Ref: "ECSAutoScalingGroup"
+      MaxSize: !Ref MaxSize
+      MinSize: !Ref MinSizeAS
+      Recurrence: "0 23 * * *"
+  ScheduledActionDown:
+    Condition: CreateProdResources
+    Type: "AWS::AutoScaling::ScheduledAction"
+    Properties:
+      AutoScalingGroupName:
+        Ref: "ECSAutoScalingGroup"
+      MaxSize: !Ref MaxSize
+      MinSize: 0
+      Recurrence: "0 15 * * *"
   ECSAutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
