@@ -696,12 +696,12 @@ Resources:
   HpTargetGroup:
     Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
     Properties:
-      HealthCheckIntervalSeconds: 30
+      HealthCheckIntervalSeconds: 15
       HealthCheckPath: '/status/heartbeat'
       HealthCheckProtocol: HTTP
-      HealthCheckTimeoutSeconds: 8
+      HealthCheckTimeoutSeconds: 10
       HealthyThresholdCount: 2
-      UnhealthyThresholdCount: 8
+      UnhealthyThresholdCount: 2
       Matcher:
         HttpCode: '200-301'
       Port: !Ref 'HpTargetGroupPort'
@@ -709,7 +709,7 @@ Resources:
       VpcId: !Ref 'VPC'
       TargetGroupAttributes:
       - Key: 'deregistration_delay.timeout_seconds'
-        Value: 20
+        Value: 5
   HpHttpListener:
     Type: 'AWS::ElasticLoadBalancingV2::Listener'
     Properties:
