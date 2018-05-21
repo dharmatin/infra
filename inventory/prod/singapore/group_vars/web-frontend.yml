@@ -1,5 +1,6 @@
 dns_hostname: web
 business_unit: ID
+Costcode: 502
 application: front-newlaunch-api
 ab: "{{ env }}"
 ecs_instance_type: t2.medium
