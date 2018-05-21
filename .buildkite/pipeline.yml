@@ -8,9 +8,7 @@ steps:
       REGION: ap-southeast-1
       BUILDKITE_BUILD_ECR: "${BUILDKITE_BUILD_ECR}"
     agents:
-      queue: ipp-regional-web:ci
-      env: development
-      market: rumah123
+      queue: "api-enquiries-ipp:ci"
     concurrency: 1
     concurrency_group: 'Frontend-stack/deploy'
   - wait
@@ -23,9 +21,7 @@ steps:
       REGION: ap-southeast-1
       BUILDKITE_BUILD_ECR: "${BUILDKITE_BUILD_ECR}"
     agents:
-      queue: ipp-regional-web:ci
-      env: development
-      market: rumah123
+      queue: "api-enquiries-ipp:ci"
   - wait
   - label: ":wastebasket: singapore-staging: cleanup stack"
     command: "./scripts/frontend-cleanup.sh"
@@ -36,9 +32,7 @@ steps:
       REGION: ap-southeast-1
       BUILDKITE_BUILD_ECR: "${BUILDKITE_BUILD_ECR}"
     agents:
-      queue: ipp-regional-web:ci
-      env: development
-      market: rumah123
+      queue: "api-enquiries-ipp:ci"
   - wait
   - block: ':pagerduty: deploy-production-sg'
 
@@ -51,9 +45,7 @@ steps:
       REGION: ap-southeast-1
       BUILDKITE_BUILD_ECR: "${BUILDKITE_BUILD_ECR}"
     agents:
-      queue: ipp-regional-web:ci
-      env: development
-      market: rumah123
+      queue: "api-enquiries-ipp:ci"
   - wait
 
   - block: ':pagerduty: switch-production'
@@ -67,9 +59,7 @@ steps:
       REGION: ap-southeast-1
       BUILDKITE_BUILD_ECR: "${BUILDKITE_BUILD_ECR}"
     agents:
-      queue: ipp-regional-web:ci
-      env: development
-      market: rumah123
+      queue: "api-enquiries-ipp:ci"
 
   - block: ':pagerduty: Clean-production'
   - wait
@@ -82,6 +72,4 @@ steps:
       REGION: ap-southeast-1
       BUILDKITE_BUILD_ECR: "${BUILDKITE_BUILD_ECR}"
     agents:
-      queue: ipp-regional-web:ci
-      env: development
-      market: rumah123
+      queue: "api-enquiries-ipp:ci"

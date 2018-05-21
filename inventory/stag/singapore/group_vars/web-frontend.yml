@@ -23,8 +23,8 @@ logs_group_hp: awslogs-stag-newlaunch-api-id
 
 resource_bucket_name: enquiries.api.iproperty.com-prod
 
-sumo_logic_access_id: su37UzMYy9KsP0
-sumo_logic_access_key: aR2sAGxpvTuBHgRb6HcgygTPynv2wpRnjuQ4OgBt9zEBGcnXLAvhTMVCuY719uLf ##  Need to verify
+sumo_logic_access_id: su37UzP0
+sumo_logic_access_key: aR2sAGxpvTuBHgRb6HcgygBt9zEBGcnXLAvhTMVCuY719uLf ##  Need to verify
 new_relic_rpm: newrelic-sysmond-2.3.0.132-1.x86_64.rpm
 new_relic_license_key: 566728cdfcce12ad0fef0741a0b24d5bbd4ee3df
 
