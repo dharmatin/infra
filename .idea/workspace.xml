@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="700bfd50-4fc5-4401-9912-b6855fa0f328" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="700bfd50-4fc5-4401-9912-b6855fa0f328" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -22,7 +20,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="buildkite-agent.yml" pinned="false" current-in-tab="true">
+      <file leaf-file-name="buildkite-agent.yml" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cloudformation/buildkite-agent.yml">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="-2149" />
@@ -47,11 +45,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="pipeline.yml" pinned="false" current-in-tab="false">
+      <file leaf-file-name="pipeline.yml" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/.buildkite/pipeline.yml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="990">
-              <caret line="66" column="44" selection-start-line="66" selection-start-column="44" selection-end-line="66" selection-end-column="44" />
+            <state relative-caret-position="240">
+              <caret line="16" column="63" lean-forward="true" selection-start-line="16" selection-start-column="63" selection-end-line="16" selection-end-column="63" />
             </state>
           </provider>
         </entry>
@@ -175,8 +173,8 @@
         <option value="$PROJECT_DIR$/roles/frontend-alb/tasks/main.yml" />
         <option value="$PROJECT_DIR$/cloudformation/frontend-alb.yml" />
         <option value="$PROJECT_DIR$/inventory/stag/singapore/group_vars/web-frontend.yml" />
-        <option value="$PROJECT_DIR$/.buildkite/pipeline.yml" />
         <option value="$PROJECT_DIR$/inventory/prod/singapore/group_vars/web-frontend.yml" />
+        <option value="$PROJECT_DIR$/.buildkite/pipeline.yml" />
       </list>
     </option>
   </component>
@@ -200,33 +198,7 @@
             <path>
               <item name="infra" type="b2602c69:ProjectViewProjectNode" />
               <item name="infra" type="462c0819:PsiDirectoryNode" />
-              <item name="cloudformation" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="infra" type="b2602c69:ProjectViewProjectNode" />
-              <item name="infra" type="462c0819:PsiDirectoryNode" />
-              <item name="inventory" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="infra" type="b2602c69:ProjectViewProjectNode" />
-              <item name="infra" type="462c0819:PsiDirectoryNode" />
-              <item name="inventory" type="462c0819:PsiDirectoryNode" />
-              <item name="prod" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="infra" type="b2602c69:ProjectViewProjectNode" />
-              <item name="infra" type="462c0819:PsiDirectoryNode" />
-              <item name="inventory" type="462c0819:PsiDirectoryNode" />
-              <item name="prod" type="462c0819:PsiDirectoryNode" />
-              <item name="singapore" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="infra" type="b2602c69:ProjectViewProjectNode" />
-              <item name="infra" type="462c0819:PsiDirectoryNode" />
-              <item name="inventory" type="462c0819:PsiDirectoryNode" />
-              <item name="prod" type="462c0819:PsiDirectoryNode" />
-              <item name="singapore" type="462c0819:PsiDirectoryNode" />
-              <item name="group_vars" type="462c0819:PsiDirectoryNode" />
+              <item name=".buildkite" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -341,9 +313,9 @@
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.32905984" />
-      <window_info anchor="bottom" id="Terminal" order="7" weight="0.31285715" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="7" visible="true" weight="0.31285715" />
       <window_info id="Designer" order="2" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.17477097" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.17477097" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info id="Learn" order="3" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -592,13 +564,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/.buildkite/pipeline.yml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="990">
-          <caret line="66" column="44" selection-start-line="66" selection-start-column="44" selection-end-line="66" selection-end-column="44" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/inventory/stag/singapore/group_vars/web-frontend.yml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="270">
@@ -644,6 +609,13 @@
     <entry file="file://$PROJECT_DIR$/cloudformation/buildkite-agent.yml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-2149" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.buildkite/pipeline.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="16" column="63" lean-forward="true" selection-start-line="16" selection-start-column="63" selection-end-line="16" selection-end-column="63" />
+        </state>
       </provider>
     </entry>
   </component>
