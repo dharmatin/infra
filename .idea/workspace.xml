@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="700bfd50-4fc5-4401-9912-b6855fa0f328" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.buildkite/pipeline.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.buildkite/pipeline.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/inventory/stag/singapore/group_vars/web-frontend.yml" beforeDir="false" afterPath="$PROJECT_DIR$/inventory/stag/singapore/group_vars/web-frontend.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -14,20 +13,27 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="cloudwatch-dashbaord.yml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/cloudformation/cloudwatch-dashbaord.yml">
+      <file leaf-file-name="frontend-alb.yml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/cloudformation/frontend-alb.yml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3">
-              <caret line="42" column="40" selection-start-line="42" selection-start-column="40" selection-end-line="42" selection-end-column="40" />
+            <state relative-caret-position="-575">
+              <caret line="353" selection-start-line="353" selection-end-line="353" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="frontend-alb.yml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/cloudformation/frontend-alb.yml">
+      <file leaf-file-name="buildkite-agent.yml" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/cloudformation/buildkite-agent.yml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="93">
-              <caret line="10" column="10" lean-forward="true" selection-start-line="10" selection-start-column="10" selection-end-line="10" selection-end-column="10" />
+            <state relative-caret-position="-2149" />
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="buildkite-agent.yml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/inventory/prod/singapore/group_vars/buildkite-agent.yml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="120">
+              <caret line="8" column="26" selection-start-line="8" selection-start-column="26" selection-end-line="8" selection-end-column="26" />
             </state>
           </provider>
         </entry>
@@ -35,17 +41,17 @@
       <file leaf-file-name="main.yml" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/roles/frontend-alb/tasks/main.yml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="240">
-              <caret line="16" column="34" lean-forward="true" selection-start-line="16" selection-start-column="34" selection-end-line="16" selection-end-column="34" />
+            <state relative-caret-position="675">
+              <caret line="45" column="42" selection-start-line="45" selection-start-column="42" selection-end-line="45" selection-end-column="42" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="pipeline.yml" pinned="false" current-in-tab="true">
+      <file leaf-file-name="pipeline.yml" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/.buildkite/pipeline.yml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="208">
-              <caret line="61" column="14" lean-forward="true" selection-start-line="61" selection-start-column="14" selection-end-line="61" selection-end-column="34" />
+            <state relative-caret-position="990">
+              <caret line="66" column="44" selection-start-line="66" selection-start-column="44" selection-end-line="66" selection-end-column="44" />
             </state>
           </provider>
         </entry>
@@ -54,7 +60,7 @@
         <entry file="file://$PROJECT_DIR$/roles/alb/tasks/main.yml">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="315">
-              <caret line="21" column="42" lean-forward="true" selection-start-line="21" selection-start-column="42" selection-end-line="21" selection-end-column="42" />
+              <caret line="21" column="42" selection-start-line="21" selection-start-column="42" selection-end-line="21" selection-end-column="42" />
             </state>
           </provider>
         </entry>
@@ -62,41 +68,8 @@
       <file leaf-file-name="web-frontend.yml" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/inventory/prod/singapore/group_vars/web-frontend.yml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="15">
-              <caret line="1" selection-start-line="1" selection-end-line="2" selection-end-column="13" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="cloudwatch-ecs-watch.yaml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/cloudformation/cloudwatch-ecs-watch.yaml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="868">
-              <caret line="285" selection-start-line="285" selection-end-line="285" />
-              <folding>
-                <element signature="e#10165#10345#0" />
-                <element signature="e#10348#10600#0" />
-                <element signature="e#10603#10887#0" />
-                <element signature="e#10890#11218#0" />
-                <element signature="e#11221#11581#0" />
-                <element signature="e#11584#11904#0" />
-                <element signature="e#11907#12228#0" />
-                <element signature="e#12231#12477#0" />
-                <element signature="e#15304#15807#0" />
-                <element signature="e#15810#16631#0" />
-                <element signature="e#16634#16882#0" />
-                <element signature="e#16885#17257#0" />
-                <element signature="e#17260#34202#0" />
-                <element signature="e#34205#35416#0" />
-                <element signature="e#35975#36302#0" />
-                <element signature="e#36305#36938#0" />
-                <element signature="e#36941#37091#0" />
-                <element signature="e#37094#37736#0" />
-                <element signature="e#37739#38392#0" />
-                <element signature="e#38395#38840#0" />
-                <element signature="e#38843#39093#0" />
-                <element signature="e#39096#39349#0" />
-              </folding>
+            <state relative-caret-position="345">
+              <caret line="23" column="22" selection-start-line="23" selection-start-column="22" selection-end-line="23" selection-end-column="54" />
             </state>
           </provider>
         </entry>
@@ -105,16 +78,7 @@
         <entry file="file://$PROJECT_DIR$/inventory/stag/singapore/group_vars/web-frontend.yml">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="270">
-              <caret line="18" column="38" lean-forward="true" selection-start-line="18" selection-start-column="38" selection-end-line="18" selection-end-column="38" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="all.yml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/inventory/stag/singapore/group_vars/all.yml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="120">
-              <caret line="8" column="26" lean-forward="true" selection-start-line="8" selection-start-column="26" selection-end-line="8" selection-end-column="26" />
+              <caret line="18" column="38" selection-start-line="18" selection-start-column="38" selection-end-line="18" selection-end-column="38" />
             </state>
           </provider>
         </entry>
@@ -124,6 +88,15 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="300">
               <caret line="20" column="26" selection-start-line="20" selection-start-column="26" selection-end-line="20" selection-end-column="26" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="all.yml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/inventory/stag/singapore/group_vars/all.yml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="120">
+              <caret line="8" column="26" selection-start-line="8" selection-start-column="26" selection-end-line="8" selection-end-column="26" />
             </state>
           </provider>
         </entry>
@@ -160,8 +133,8 @@
       <find>ContainerShortageThreshold</find>
       <find>target</find>
       <find>LoadBalancer</find>
-      <find>tag</find>
       <find>newrelic</find>
+      <find>tag</find>
     </findStrings>
     <replaceStrings>
       <replace>PPP</replace>
@@ -198,12 +171,12 @@
         <option value="$PROJECT_DIR$/roles/frontend-alb/tasks/dashboard.json" />
         <option value="$PROJECT_DIR$/cloudformation/lifecycle.yaml" />
         <option value="$PROJECT_DIR$/cloudformation/cloudwatch-ecs-watch.yaml" />
-        <option value="$PROJECT_DIR$/inventory/prod/singapore/group_vars/web-frontend.yml" />
         <option value="$PROJECT_DIR$/roles/alb/tasks/main.yml" />
         <option value="$PROJECT_DIR$/roles/frontend-alb/tasks/main.yml" />
         <option value="$PROJECT_DIR$/cloudformation/frontend-alb.yml" />
         <option value="$PROJECT_DIR$/inventory/stag/singapore/group_vars/web-frontend.yml" />
         <option value="$PROJECT_DIR$/.buildkite/pipeline.yml" />
+        <option value="$PROJECT_DIR$/inventory/prod/singapore/group_vars/web-frontend.yml" />
       </list>
     </option>
   </component>
@@ -224,12 +197,43 @@
               <item name="infra" type="b2602c69:ProjectViewProjectNode" />
               <item name="infra" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="infra" type="b2602c69:ProjectViewProjectNode" />
+              <item name="infra" type="462c0819:PsiDirectoryNode" />
+              <item name="cloudformation" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="infra" type="b2602c69:ProjectViewProjectNode" />
+              <item name="infra" type="462c0819:PsiDirectoryNode" />
+              <item name="inventory" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="infra" type="b2602c69:ProjectViewProjectNode" />
+              <item name="infra" type="462c0819:PsiDirectoryNode" />
+              <item name="inventory" type="462c0819:PsiDirectoryNode" />
+              <item name="prod" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="infra" type="b2602c69:ProjectViewProjectNode" />
+              <item name="infra" type="462c0819:PsiDirectoryNode" />
+              <item name="inventory" type="462c0819:PsiDirectoryNode" />
+              <item name="prod" type="462c0819:PsiDirectoryNode" />
+              <item name="singapore" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="infra" type="b2602c69:ProjectViewProjectNode" />
+              <item name="infra" type="462c0819:PsiDirectoryNode" />
+              <item name="inventory" type="462c0819:PsiDirectoryNode" />
+              <item name="prod" type="462c0819:PsiDirectoryNode" />
+              <item name="singapore" type="462c0819:PsiDirectoryNode" />
+              <item name="group_vars" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
       <pane id="PackagesPane" />
+      <pane id="Scope" />
       <pane id="AndroidView" />
     </panes>
   </component>
@@ -337,26 +341,26 @@
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.32905984" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="7" visible="true" weight="0.31285715" />
+      <window_info anchor="bottom" id="Terminal" order="7" weight="0.31285715" />
       <window_info id="Designer" order="2" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.17477097" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.17477097" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
-      <window_info id="Learn" />
+      <window_info id="Learn" order="3" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="right" id="Palette" order="3" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" id="Capture Analysis" order="3" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="right" id="Theme Preview" order="3" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info id="Image Layers" order="2" />
-      <window_info id="Capture Tool" order="2" />
       <window_info id="UI Designer" order="2" />
+      <window_info anchor="right" id="Capture Analysis" order="3" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info id="Capture Tool" order="2" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32905984" />
       <window_info anchor="right" id="Maven Projects" order="3" />
     </layout>
@@ -421,9 +425,6 @@
           <caret line="83" column="40" selection-start-line="83" selection-start-column="40" selection-end-line="83" selection-end-column="40" />
         </state>
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/inventory/prod/singapore/group_vars/buildkite-agent.yml">
-      <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/inventory/prod/singapore/group_vars/enquiries-api" />
     <entry file="file://$PROJECT_DIR$/inventory/prod/singapore/group_vars/alb.yml">
@@ -511,9 +512,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cloudformation/buildkite-agent.yml">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/roles/frontend-switch-stack/tasks/main.yml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="360">
@@ -542,23 +540,16 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/inventory/prod/singapore/group_vars/all.yml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="20" column="26" selection-start-line="20" selection-start-column="26" selection-end-line="20" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/cloudformation/cloudwatch-dashbaord.yml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3">
+        <state relative-caret-position="630">
           <caret line="42" column="40" selection-start-line="42" selection-start-column="40" selection-end-line="42" selection-end-column="40" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/cloudformation/cloudwatch-ecs-watch.yaml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="868">
+        <state relative-caret-position="4275">
           <caret line="285" selection-start-line="285" selection-end-line="285" />
           <folding>
             <element signature="e#10165#10345#0" />
@@ -590,50 +581,69 @@
     <entry file="file://$PROJECT_DIR$/roles/alb/tasks/main.yml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="315">
-          <caret line="21" column="42" lean-forward="true" selection-start-line="21" selection-start-column="42" selection-end-line="21" selection-end-column="42" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cloudformation/frontend-alb.yml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="93">
-          <caret line="10" column="10" lean-forward="true" selection-start-line="10" selection-start-column="10" selection-end-line="10" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/roles/frontend-alb/tasks/main.yml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="16" column="34" lean-forward="true" selection-start-line="16" selection-start-column="34" selection-end-line="16" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/inventory/prod/singapore/group_vars/web-frontend.yml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="1" selection-start-line="1" selection-end-line="2" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/inventory/stag/singapore/group_vars/web-frontend.yml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="18" column="38" lean-forward="true" selection-start-line="18" selection-start-column="38" selection-end-line="18" selection-end-column="38" />
+          <caret line="21" column="42" selection-start-line="21" selection-start-column="42" selection-end-line="21" selection-end-column="42" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/inventory/stag/singapore/group_vars/all.yml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="120">
-          <caret line="8" column="26" lean-forward="true" selection-start-line="8" selection-start-column="26" selection-end-line="8" selection-end-column="26" />
+          <caret line="8" column="26" selection-start-line="8" selection-start-column="26" selection-end-line="8" selection-end-column="26" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/.buildkite/pipeline.yml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="208">
-          <caret line="61" column="14" lean-forward="true" selection-start-line="61" selection-start-column="14" selection-end-line="61" selection-end-column="34" />
+        <state relative-caret-position="990">
+          <caret line="66" column="44" selection-start-line="66" selection-start-column="44" selection-end-line="66" selection-end-column="44" />
         </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/inventory/stag/singapore/group_vars/web-frontend.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="18" column="38" selection-start-line="18" selection-start-column="38" selection-end-line="18" selection-end-column="38" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/roles/frontend-alb/tasks/main.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="675">
+          <caret line="45" column="42" selection-start-line="45" selection-start-column="42" selection-end-line="45" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cloudformation/frontend-alb.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-575">
+          <caret line="353" selection-start-line="353" selection-end-line="353" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/inventory/prod/singapore/group_vars/buildkite-agent.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="8" column="26" selection-start-line="8" selection-start-column="26" selection-end-line="8" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/inventory/prod/singapore/group_vars/all.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="300">
+          <caret line="20" column="26" selection-start-line="20" selection-start-column="26" selection-end-line="20" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/inventory/prod/singapore/group_vars/web-frontend.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="345">
+          <caret line="23" column="22" selection-start-line="23" selection-start-column="22" selection-end-line="23" selection-end-column="54" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cloudformation/buildkite-agent.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2149" />
       </provider>
     </entry>
   </component>
