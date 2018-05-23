@@ -452,7 +452,7 @@ Resources:
                                    --resource ContainerInstances
 
           function configure_newrelic_infra {
-            if [ "${Env}" -eq "prod-sg" ]
+            if [ "${Env}" -eq "prod" ]
             then
               sudo echo "license_key: ${NewRelicLicenseKey}" | sudo tee -a /etc/newrelic-infra.yml
               cat /etc/os-release
