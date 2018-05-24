@@ -3,6 +3,11 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: >-
     Install the frontend stack for all environments
 Parameters:
+
+  ECSAMI:
+    Description: AMI ID
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ecs/optimized-ami/amazon-linux/recommended/image_id
   BusinessUnit:
     Type: String
     Description: Two letters country code for billing purpose
@@ -127,15 +132,6 @@ Parameters:
 
 Conditions:
   CreateProdResources: !Not [!Equals [!Ref Env, "prod"]]
-
-Mappings:
-  AWSRegionArch2AMI:
-    ap-southeast-1:
-      HVM64: ami-846144f8
-    ap-northeast-1:
-      HVM64: ami-a99d8ad5
-    ap-southeast-2:
-      HVM64: ami-efda148d
 
 Resources:
   ECSCluster:
@@ -406,11 +402,7 @@ Resources:
     Properties:
       KeyName:
         Ref: KeyNamessh
-      ImageId:
-        Fn::FindInMap:
-        - AWSRegionArch2AMI
-        - Ref: AWS::Region
-        - HVM64
+      ImageId: !Ref: 'ECSAMI'
       InstanceType:
         Ref: Instancestype
       InstanceMonitoring: true
