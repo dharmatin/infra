@@ -3,7 +3,6 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: >-
     Install the frontend stack for all environments
 Parameters:
-
   ECSAMI:
     Description: AMI ID
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
