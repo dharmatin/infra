@@ -421,8 +421,6 @@ Resources:
             exit 1
           }
 
-          /opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --configsets InstallAndRun --resource ContainerInstances
-
           function install_package
           {
             /usr/bin/yum install -y vim curl wget aws-cfn-bootstrap
@@ -457,6 +455,7 @@ Resources:
           }
 
           install_package                   || error_exit 'failed to install_package'
+          /opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --configsets InstallAndRun --resource ContainerInstances
           configure_hosts                   || error_exit "Fail to configure Hostname on EC2 Host"
           configure_newrelic_infra          || error_exit "Fail to install NewRelic agent on EC2 Host"
           configure_ecs                     || error_exit "Fail to Final config steps for logging and ecs cluster"
