@@ -380,6 +380,11 @@ Resources:
               mode: "000400"
               owner: root
               group: root
+            "/usr/local/bin/shush":
+              source: "https://github.com/realestate-com-au/shush/releases/download/v1.3.4/shush_linux_amd64"
+              mode: '000755'
+              owner: root
+              group: root
             "/etc/cfn/hooks.d/cfn-auto-reloader.conf":
               content: !Sub |
                 [cfn-auto-reloader-hook]
@@ -420,19 +425,15 @@ Resources:
           function error_exit
           {
             /bin/echo $1
-            /opt/aws/bin/cfn-signal -e 1 \
-                                    --stack ${AWS::StackName} \
-                                    --resource ECSAutoScalingGroup \
-                                    --region ${AWS::Region}
+            /opt/aws/bin/cfn-signal -e 1 --stack ${AWS::StackName} --resource ECSAutoScalingGroup --region ${AWS::Region}
             exit 1
           }
 
-          function install_shush
+          /opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --configsets InstallAndRun --resource ContainerInstances
+
+          function install_package
           {
             /usr/bin/yum install -y vim curl wget aws-cfn-bootstrap
-            curl -sL -o /usr/local/bin/shush \
-              https://github.com/realestate-com-au/shush/releases/download/v1.3.0/shush_linux_amd64 \
-              && chmod +x /usr/local/bin/shush
           }
 
           function configure_hosts {
@@ -444,17 +445,11 @@ Resources:
             /bin/hostname $recordName-$ipend
           }
 
-          install_shush || error_exit 'failed to install_shush'
-          configure_hosts || error_exit "Fail to configure Hostname on EC2 Host"
-          /opt/aws/bin/cfn-init -v --region ${AWS::Region} \
-                                   --stack ${AWS::StackName} \
-                                   --configsets InstallAndRun \
-                                   --resource ContainerInstances
-
           function configure_newrelic_infra {
             if [ "${Env}" -eq "prod" ]
             then
-              sudo echo "license_key: ${NewRelicLicenseKey}" | sudo tee -a /etc/newrelic-infra.yml
+              newrelic_key=$(/usr/local/bin/shush --region ${AWS::Region} decrypt ${NewRelicLicenseKey})
+              sudo echo "license_key: $newrelic_key " | sudo tee -a /etc/newrelic-infra.yml
               cat /etc/os-release
               sudo curl -o /etc/yum.repos.d/newrelic-infra.repo https://download.newrelic.com/infrastructure_agent/linux/yum/el/6/x86_64/newrelic-infra.repo
               sudo yum -q makecache -y --disablerepo='*' --enablerepo='newrelic-infra'
@@ -469,12 +464,13 @@ Resources:
             /bin/echo ECS_LOGLEVEL=error >> /etc/ecs/ecs.config
           }
 
-          configure_newrelic_infra || error_exit "Fail to install NewRelic agent on EC2 Host"
-          configure_ecs || error_exit "Fail to Final config steps for logging and ecs cluster"
-          /opt/aws/bin/cfn-signal -e $? \
-                                  --stack ${AWS::StackName} \
-                                  --resource ECSAutoScalingGroup \
-                                  --region ${AWS::Region}
+          install_package                   || error_exit 'failed to install_package'
+          configure_hosts                   || error_exit "Fail to configure Hostname on EC2 Host"
+          configure_newrelic_infra          || error_exit "Fail to install NewRelic agent on EC2 Host"
+          configure_ecs                     || error_exit "Fail to Final config steps for logging and ecs cluster"
+
+          /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource ECSAutoScalingGroup --region ${AWS::Region}
+
   AutoscalingRole:
     DependsOn: 'ECSAutoScalingGroup'
     Type: 'AWS::IAM::Role'

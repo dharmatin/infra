@@ -23,10 +23,10 @@ logs_group_hp: awslogs-prod-newlaunch-api-id
 
 resource_bucket_name: enquiries.api.iproperty.com-prod
 
-sumo_logic_access_id: su37Uz9KsP0
-sumo_logic_access_key: aR2sAGxpvTuBHgTPynv2wpRnjuQ4OgBt9zEBGcnXLAvhTMVCuY719uLf
-new_relic_rpm: newrelic-sysmond-2.3.0.132-1.x86_64.rpm
-new_relic_license_key: 566728cdfcce12ad0fef0741a0b24d5bbd4ee3df
+sumo_logic_access_id: su37UzP0
+sumo_logic_access_key: aR2sAGxpvwpRnjuQ4OgBt9zEBGcnXLAvhTMVCuY719uLf
+
+new_relic_license_key: AQICAHj1keVeoA9wgQiW1BgXe6UsTUpVjgI7V6Mt9byC0bH+PQGTngzwJufitleBeVQPKwzxAAAAhzCBhAYJKoZIhvcNAQcGoHcwdQIBADBwBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDNatzBwqvri+exxUVQIBEIBDisZhk0sB+yWgpjzkswgMoLJw0dnlunGinvGQwDkMUCEOmCtcRnGp2US4sMMPQ+Jc4w4TWtMmuKJ5sh5N6ykEQKv4HQ==
 
 deployment_ecr: "{{ account_arns }}.dkr.ecr.ap-southeast-1.amazonaws.com"
 buildkite_build_ecr: latest
