@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="700bfd50-4fc5-4401-9912-b6855fa0f328" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="700bfd50-4fc5-4401-9912-b6855fa0f328" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -16,8 +14,8 @@
       <file leaf-file-name="frontend-alb.yml" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/cloudformation/frontend-alb.yml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="8589">
-              <caret line="695" column="22" lean-forward="true" selection-start-line="695" selection-start-column="22" selection-end-line="695" selection-end-column="22" />
+            <state relative-caret-position="153">
+              <caret line="690" column="30" lean-forward="true" selection-start-line="690" selection-start-column="30" selection-end-line="690" selection-end-column="30" />
             </state>
           </provider>
         </entry>
@@ -266,7 +264,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="797" extended-state="0" />
-    <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="right" id="Palette&#9;" order="3" />
@@ -551,8 +548,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/cloudformation/frontend-alb.yml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="8589">
-          <caret line="695" column="22" lean-forward="true" selection-start-line="695" selection-start-column="22" selection-end-line="695" selection-end-column="22" />
+        <state relative-caret-position="153">
+          <caret line="690" column="30" lean-forward="true" selection-start-line="690" selection-start-column="30" selection-end-line="690" selection-end-column="30" />
         </state>
       </provider>
     </entry>

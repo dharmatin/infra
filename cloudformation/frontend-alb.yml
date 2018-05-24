@@ -402,7 +402,8 @@ Resources:
     Properties:
       KeyName:
         Ref: KeyNamessh
-      ImageId: !Ref: 'ECSAMI'
+      ImageId:
+        Ref: 'ECSAMI'
       InstanceType:
         Ref: Instancestype
       InstanceMonitoring: true
