@@ -693,10 +693,12 @@ Resources:
           Protocol: tcp
           ContainerPort: '9000'
         Environment:
+        - Name: REGION
+          Value: !Ref 'AWS::Region'
         - Name: NODE_ENV
           Value: !Sub '${Env}'
-        - Name: NEW_RELIC_LICENSE_KEY
-          Value: !Sub '${NewRelicLicenseKey}'
+        #- Name: NEW_RELIC_LICENSE_KEY
+        #  Value: !Sub '${NewRelicLicenseKey}'
         - Name: NEW_RELIC_APP_NAME
           Value: !Join ['', [!Ref 'Project', '-', !Ref 'Env', '-' ,'PPP']]
         Image: !Join ['', [!Ref 'ECRRegistry', '/', !Ref 'HpECRRepo', ':', !Ref 'HpBuildEcr']]
