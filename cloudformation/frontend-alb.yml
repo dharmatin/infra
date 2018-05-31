@@ -1,7 +1,7 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
 Description: >-
-    Install the frontend stack for all environments
+    Deployment for newlaunch-ID-PPP
 Parameters:
   ECSAMI:
     Description: AMI ID
@@ -684,12 +684,12 @@ Resources:
           Protocol: tcp
           ContainerPort: '9000'
         Environment:
+        - Name: RUNTIME
+          Value: server
         - Name: REGION
           Value: !Ref 'AWS::Region'
         - Name: NODE_ENV
           Value: !Sub '${Env}'
-        #- Name: NEW_RELIC_LICENSE_KEY
-        #  Value: !Sub '${NewRelicLicenseKey}'
         - Name: NEW_RELIC_APP_NAME
           Value: !Join ['', [!Ref 'Project', '-', !Ref 'Env', '-' ,'PPP']]
         Image: !Join ['', [!Ref 'ECRRegistry', '/', !Ref 'HpECRRepo', ':', !Ref 'HpBuildEcr']]
