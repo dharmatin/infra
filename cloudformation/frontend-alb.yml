@@ -365,7 +365,7 @@ Resources:
               group: "root"
             /etc/newrelic-infra.yml:
               content: !Sub |
-                display_name: ${Project}-${BusinessUnit}-${Env}-${Version}
+                display_name: ${Project}-${BusinessUnit}-${Env}
                 custom_attributes:
                   environment: ${Env}
                   service: ${Project}-${Env}
