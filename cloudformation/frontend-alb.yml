@@ -38,17 +38,16 @@ Parameters:
       - m3.large
       - m4.large
       - m4.xlarge
-      - m4.2xlarge
       - c4.large
       - c4.xlarge
-      - c4.2xlarge
+      - c5.large
   KeyNamessh:
     Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
     Type: 'AWS::EC2::KeyPair::KeyName'
     ConstraintDescription: must be the name of an existing EC2 KeyPair.
   MinSizeAS:
     Type: Number
-    Default: '2'
+    Default: '1'
     Description: Number of Min Size AS instance
   MaxSize:
     Type: Number
@@ -339,13 +338,16 @@ Resources:
         PropagateAtLaunch: true
     CreationPolicy:
       ResourceSignal:
-        Timeout: PT5M
+        Count: !Ref 'MinSizeAS'
+        Timeout: PT15M
     UpdatePolicy:
+      AutoScalingScheduledAction:
+        IgnoreUnmodifiedGroupSizeProperties: 'true'
       AutoScalingRollingUpdate:
-        MinInstancesInService: '1'
+        MinInstancesInService: !Ref 'MinSizeAS'
         MaxBatchSize: '1'
-        PauseTime: PT15M
         WaitOnResourceSignals: 'true'
+        PauseTime: PT10M
 
   ContainerInstances:
     Type: AWS::AutoScaling::LaunchConfiguration
@@ -553,7 +555,7 @@ Resources:
       Namespace: 'AWS/ECS'
       Statistic: Average
       Period: '60'
-      EvaluationPeriods: '5'
+      EvaluationPeriods: '1'
       Threshold: '90'
       AlarmActions:
       - Ref: 'HpServiceScalingUpPolicy'
@@ -624,7 +626,7 @@ Resources:
       VpcId: !Ref 'VPC'
       TargetGroupAttributes:
       - Key: 'deregistration_delay.timeout_seconds'
-        Value: 5
+        Value: 10
   HpHttpListener:
     Type: 'AWS::ElasticLoadBalancingV2::Listener'
     Properties:
@@ -655,8 +657,8 @@ Resources:
         Ref: ECSCluster
       DesiredCount: !Ref HpserviceCount
       DeploymentConfiguration:
-        MaximumPercent: '150'
-        MinimumHealthyPercent: '50'
+        MaximumPercent: '200'
+        MinimumHealthyPercent: '100'
       LoadBalancers:
       - ContainerName: ECS-HP-TASK
         ContainerPort: '9000'

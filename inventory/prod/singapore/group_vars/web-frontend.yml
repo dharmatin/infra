@@ -5,9 +5,9 @@ application: front-newlaunch-api
 ab: "{{ env }}"
 ecs_instance_type: t2.medium
 build: latest
-min_asg_size: 2
+min_asg_size: 1
 max_asg_size: 4
-desired_asg_capacity: 2
+desired_asg_capacity: 1
 
 instance_profile_role: EC2-Role-Instance-Profile
 
@@ -17,8 +17,8 @@ ssl_cert_arn:
 
 hp_ecr_repo: "{{ ecr_name }}"
 hp_service_count: "{{ min_asg_size }}"
-hp_task_mem: 3840
-hp_task_cpu: 1756
+hp_task_mem: 3940
+hp_task_cpu: 1792
 logs_group_hp: awslogs-prod-newlaunch-api-id
 
 resource_bucket_name: enquiries.api.iproperty.com-prod
