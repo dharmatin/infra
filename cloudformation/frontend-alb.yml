@@ -438,7 +438,7 @@ Resources:
           }
 
           function configure_newrelic_infra {
-            if [ "${Env}" -eq "prod" ]
+            if [ "${Env}" = "prod" ]
             then
               newrelic_key=$(/usr/local/bin/shush --region ${AWS::Region} decrypt ${NewRelicLicenseKey})
               sudo echo "license_key: $newrelic_key " | sudo tee -a /etc/newrelic-infra.yml
