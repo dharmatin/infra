@@ -1,6 +1,6 @@
 ---
 business_unit: ID
-project: newlaunch.api-id
+project: legacy-id
 application: front-newlaunch-api
 env: prod
 env_invent: prod
